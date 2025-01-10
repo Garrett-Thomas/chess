@@ -7,8 +7,10 @@ public class KingMovesCalculator implements PieceMovesCalculator{
 
     }
 
-        // Need to check the cross and the diagnol for this
+        // Need to check the cross and the diagonal for this
      public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position){
 
+
+        throw new RuntimeException("not implemented");
     }
 }
