@@ -15,7 +15,13 @@ public class ChessPosition {
         this.row = row;
         this.col = col;
     }
-
+    public ChessPosition(ChessPosition pos){
+        this.row = 8 - pos.getRow();
+        this.col = pos.getColumn() + 1;
+    }
+    public String toString(){
+        return "Col: " + this.col + " Row: " + this.row;
+    }
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -47,5 +53,28 @@ public class ChessPosition {
     // x-value
     public int getColumn() {
         return this.col - 1;
+    }
+    public int getBoardRow(){
+        return this.row;
+    }
+
+    public int getBoardColumn(){
+        return this.col;
+    }
+
+    public void addColumn(int toAdd){
+        this.col += toAdd;
+    }
+
+    public void addRow(int toAdd){
+        this.row += toAdd;
+    }
+
+    public int[] convertToArrayPos(int x, int y){
+        return new int[]{8 - x, y - 1};
+    }
+
+    public int[] convertToBoardPos(int x, int y){
+        return new int[]{8 - x, y + 1};
     }
 }

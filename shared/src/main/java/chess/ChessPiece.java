@@ -12,9 +12,20 @@ import java.util.Objects;
 public class ChessPiece {
     private ChessGame.TeamColor pieceColor;
     private ChessPiece.PieceType type;
+    private boolean hasMoved;
+    private PieceMovesCalculator calculator;
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+        this.hasMoved = false;
+        switch(this.type){
+            case KING -> this.calculator = new KingMovesCalculator();
+            case QUEEN -> this.calculator = new QueenMovesCalculator();
+            case BISHOP -> this.calculator = new BishopMovesCalculator();
+            case KNIGHT -> this.calculator = new KnightMovesCalculator();
+            case ROOK -> this.calculator = new RookMovesCalculator();
+            case PAWN -> this.calculator = new PawnMovesCalculator();
+        }
     }
 
     /**
@@ -63,6 +74,14 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        return this.calculator.pieceMoves(board, myPosition);
+    }
+
+    public boolean getHasMoved(){
+        return this.hasMoved;
+    }
+
+    public void setHasMoved(){
+        this.hasMoved = true;
     }
 }
