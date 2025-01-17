@@ -15,11 +15,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
      * @param position
      * @return Collection of moves that the piece can make
      *
-     * Move changes depends on if black or white
-     * Black moves down the board
-     * White moves up the board
-     * Can only move forward or forward diagonal if taking a piece
-     * Can move two spaces forward on first move of the game
+     * Current Issue is that I am not distinguishing between board position and array position.
      *
      */
 
@@ -64,70 +60,115 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         }
 
         boolean isBlack = pawnPiece.getTeamColor() == ChessGame.TeamColor.BLACK;
-
+        boolean possiblePromotion = (isBlack && position.getRow() >= 6) || (!isBlack && position.getRow() <= 1);
         int moveTwo = isBlack ? -2 : 2;
         int moveOne = isBlack ? -1 : 1;
         int startingRow = isBlack ? 1 : 6;
 
-        int[][] moveDiagonal = isBlack ? new int[][]{{-1, -1}, {1, -1}} : new int[][]{{-1, 1}, {1, 1}};
+
+        int[][] moveDiagonal = isBlack ? new int[][]{{-1, 1}, {-1, -1}} : new int[][]{{1, 1}, {1, -1}};
 
 
-        // If not on left side or not on top or bottom can check the right diagonal.
-        if (position.getColumn() > 0 && position.getRow() > 0 && position.getRow() < 7) {
-            toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[0][1], position.getBoardColumn() + moveDiagonal[0][0]);
+        // If not on left side or not on top or bottom can check the left diagonal.
+        if (position.getColumn() > 0 && ((position.getRow() > 1 && position.getRow() < 6) || !possiblePromotion)) {
 
-            if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
-                allMoves.add(new ChessMove(position, toMove, null));
+            if (isBlack) {
+                toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[1][0], position.getBoardColumn() + moveDiagonal[1][1]);
+            } else {
+                toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[1][0], position.getBoardColumn() + moveDiagonal[1][1]);
             }
 
-        }
-        if (position.getColumn() < 7 && position.getRow() > 0 && position.getRow() < 7) {
-            toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[1][1], position.getBoardColumn() + moveDiagonal[1][0]);
+                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                    allMoves.add(new ChessMove(position, toMove, null));
+                }
 
-            if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
-                allMoves.add(new ChessMove(position, toMove, null));
-            }
-        }
-
-        if (!pawnPiece.getHasMoved()) {
-            toMove = new ChessPosition(position.getBoardRow() + moveTwo, position.getBoardColumn());
-
-            if (isValidMove(position, toMove, board) && position.getRow() == startingRow) {
-                allMoves.add(new ChessMove(position, toMove, null));
             }
 
-            toMove = new ChessPosition(position.getBoardRow() + moveOne, position.getBoardColumn());
+            // If not on right edge and not on top nor on bottom can check the right diagonal
+            if (position.getColumn() < 7 && ((position.getRow() > 1 && position.getRow() < 6) || !possiblePromotion)) {
 
-            if (isValidMove(position, toMove, board) && IsPieceNull(toMove, board)) {
-                allMoves.add(new ChessMove(position, toMove, null));
+                if (isBlack) {
+                    toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[0][0], position.getBoardColumn() + moveDiagonal[0][1]);
+                } else {
+
+                    toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[0][0], position.getBoardColumn() + moveDiagonal[0][1]);
+
+                }
+                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                    allMoves.add(new ChessMove(position, toMove, null));
+                }
             }
 
-        }
+            if (!pawnPiece.getHasMoved() && position.getRow() == startingRow) {
+                toMove = new ChessPosition(position.getBoardRow() + moveTwo, position.getBoardColumn());
 
-        // Check for Promotions
+                // Need to ensure that pawn doesn't jump over a piece
+                ChessPosition intermedPos = new ChessPosition(position.getBoardRow() + moveOne, position.getBoardColumn());
 
-        // This checks to see if the pawn is one turn away from the edge but doesn't check the corners.
-        if ((position.getRow() == 1 || position.getRow() == 6) && position.getColumn() > 0 && position.getColumn() < 7) {
-            toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[0][1], position.getBoardColumn() + moveDiagonal[0][0]);
-            if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
-                addPromotePieces(allMoves, position, toMove);
+                if (isValidMove(position, toMove, board) && IsPieceNull(toMove, board) && IsPieceNull(intermedPos, board)) {
+                    allMoves.add(new ChessMove(position, toMove, null));
+                }
+
             }
-            toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[1][1], position.getBoardColumn() + moveDiagonal[1][0]);
-            if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
-                addPromotePieces(allMoves, position, toMove);
+
+
+            // Check for Promotions
+            // This checks to see if the pawn is one turn away from the edge but doesn't check the corners.
+            if ((position.getRow() == 1 || position.getRow() == 6) && position.getColumn() > 0 && position.getColumn() < 7 && possiblePromotion) {
+                // Check Right Diagonal
+                toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[0][0], position.getBoardColumn() + moveDiagonal[0][1]);
+                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                    addPromotePieces(allMoves, position, toMove);
+                }
+                // Check Left Diagonal
+                toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[1][0], position.getBoardColumn() + moveDiagonal[1][1]);
+                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                    addPromotePieces(allMoves, position, toMove);
+                }
+
+
             }
-        }
 
-        // Check corners
+            // Check corners
+            // Left Corners
+            if (possiblePromotion && position.getColumn() == 0 && (position.getRow() == 1 || position.getRow() == 6)) {
+
+                // Need to see if they can make right diagonal
+                toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[0][0], position.getBoardColumn() + moveDiagonal[0][1]);
+                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                    addPromotePieces(allMoves, position, toMove);
+                }
+            }
+
+            // Right Corners
+            if (possiblePromotion && position.getColumn() == 7 && (position.getRow() == 1 || position.getRow() == 6)) {
+
+                toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[0][0], position.getBoardColumn() + moveDiagonal[0][1]);
+                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                    addPromotePieces(allMoves, position, toMove);
+                }
+            }
 
 
-        // Left Corners
-        if (position.getColumn() == 0 &&  (position.getRow() == 1 || position.getRow() == 6)){
+            // Forward Promotion
+            if(possiblePromotion && (position.getRow() == 6 || position.getRow() == 1)){
+                toMove = new ChessPosition(position.getBoardRow() + moveOne, position.getBoardColumn());
 
+                if(isValidMove(position, toMove, board) && IsPieceNull(toMove, board)){
+                    addPromotePieces(allMoves, position, toMove);
+                }
+            }
 
+            // Forward movement
+            if(!possiblePromotion){
+               toMove = new ChessPosition(position.getBoardRow() + moveOne, position.getBoardColumn());
 
-        }
+               if(isValidMove(position, toMove, board) && IsPieceNull(toMove, board)){
+                   allMoves.add(new ChessMove(position, toMove, null));
+               }
 
-        return allMoves;
+            }
+            return allMoves;
+        
     }
 }
