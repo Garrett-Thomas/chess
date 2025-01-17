@@ -5,6 +5,13 @@ import java.util.Collection;
 
 public class MovesCalcUtils {
 
+
+    public static boolean isInBounds(ChessPosition position){
+
+
+
+        return (position.getBoardRow() >= 1 && position.getBoardRow() <= 8 && position.getBoardColumn() >= 1 && position.getBoardColumn() <= 8);
+    }
     public static boolean isPieceNull(ChessPosition newPosition, ChessBoard board) {
 
         ChessPiece otherPiece = board.getPiece(newPosition);

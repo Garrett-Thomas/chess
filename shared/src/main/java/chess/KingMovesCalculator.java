@@ -5,42 +5,34 @@ import java.util.Collection;
 
 public class KingMovesCalculator implements PieceMovesCalculator{
 
-    private final int[][] kingMoves;
     KingMovesCalculator(){
-        this.kingMoves = new int[][]{
-                {-1, -1}, {-1, 0}, {-1, 1},{0, 1}, {1, 1},{1, 0},{1, -1},{0, -1}
-        };
     }
 
         // Need to check the cross and the diagonal for this
      public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position){
 
-        Collection<ChessMove> allMoves = new ArrayList<ChessMove>();
+         Collection<ChessMove> allMoves = new ArrayList<ChessMove>();
+         ChessPiece kingPiece = board.getPiece(position);
+         ChessPosition toMove;
+         int[][] kingMoves = new int[][]{
+                 {-1, -1}, {-1, 0}, {-1, 1},{0, 1}, {1, 1},{1, 0},{1, -1},{0, -1}
+         };
 
+         if (kingPiece.getPieceType() != ChessPiece.PieceType.KING) {
+             throw new RuntimeException("Piece is not a pawn");
+         }
 
+        for(int [] arr : kingMoves){
 
+            toMove = new ChessPosition(position.getBoardRow() + arr[0], position.getBoardColumn() + arr[1]);
 
-        // col is x, row is y
-        for(int[] direction : this.kingMoves){
-
-            int col = position.getColumn();
-            int row = position.getRow();
-
-            col += direction[1];
-            row += direction[0];
-
-            if (col > 7 || col < 0 || row > 7 || row < 0){
-                continue;
+            if(MovesCalcUtils.isInBounds(toMove) && MovesCalcUtils.isValidMove(position, toMove, board)){
+                allMoves.add(new ChessMove(position, toMove, null));
             }
 
 
+
         }
-
-
-
-
-
-
 
         return allMoves;
     }
