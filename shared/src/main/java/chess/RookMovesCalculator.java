@@ -8,26 +8,6 @@ public class RookMovesCalculator implements PieceMovesCalculator{
 
     }
 
-    private boolean IsPieceNull(ChessPosition newPosition, ChessBoard board) {
-
-        ChessPiece otherPiece = board.getPiece(newPosition);
-
-        return otherPiece == null;
-
-    }
-
-    private boolean isValidMove(ChessPosition currPosition, ChessPosition newPosition, ChessBoard board) {
-
-        ChessPiece currPiece = board.getPiece(currPosition);
-        ChessGame.TeamColor selfColor = currPiece.getTeamColor();
-        ChessPiece otherPiece = board.getPiece(newPosition);
-        if (otherPiece == null) {
-            return true;
-        }
-
-        return otherPiece.getTeamColor() != selfColor;
-
-    }
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position){
         Collection<ChessMove> allMoves = new ArrayList<ChessMove>();
 
@@ -45,14 +25,14 @@ public class RookMovesCalculator implements PieceMovesCalculator{
             // Else statement breaks if thats not true because it means that there is a friendly piece there
             // Second if breaks if toMove is the position of an enemy piece that we just took.
            toMove = new ChessPosition(position.getBoardRow() + i, position.getBoardColumn());
-            if(isValidMove(position, toMove, board)){
+            if(MovesCalcUtils.isValidMove(position, toMove, board)){
             allMoves.add(new ChessMove(position, toMove, null));
             }
             else{
                 break;
             }
 
-            if(!IsPieceNull(toMove, board)){
+            if(!MovesCalcUtils.isPieceNull(toMove, board)){
                 break;
             }
         }
@@ -61,13 +41,13 @@ public class RookMovesCalculator implements PieceMovesCalculator{
         for(int i = -1; i + position.getBoardRow() >= 1; i--){
 
             toMove = new ChessPosition(position.getBoardRow() + i, position.getBoardColumn());
-            if(isValidMove(position, toMove, board)){
+            if(MovesCalcUtils.isValidMove(position, toMove, board)){
                 allMoves.add(new ChessMove(position, toMove, null));
             }
             else{
                 break;
             }
-            if(!IsPieceNull(toMove, board)){
+            if(!MovesCalcUtils.isPieceNull(toMove, board)){
                 break;
             }
         }
@@ -76,13 +56,13 @@ public class RookMovesCalculator implements PieceMovesCalculator{
         for(int i = 1; i + position.getBoardColumn() <= 8; i++){
 
             toMove = new ChessPosition(position.getBoardRow(), position.getBoardColumn() + i);
-            if(isValidMove(position, toMove, board)){
+            if(MovesCalcUtils.isValidMove(position, toMove, board)){
                 allMoves.add(new ChessMove(position, toMove, null));
             }
             else{
                 break;
             }
-            if(!IsPieceNull(toMove, board)){
+            if(!MovesCalcUtils.isPieceNull(toMove, board)){
                 break;
             }
         }
@@ -91,13 +71,13 @@ public class RookMovesCalculator implements PieceMovesCalculator{
         for(int i = -1; i + position.getBoardColumn() >= 1; i--){
 
             toMove = new ChessPosition(position.getBoardRow(), position.getBoardColumn() + i);
-            if(isValidMove(position, toMove, board)){
+            if(MovesCalcUtils.isValidMove(position, toMove, board)){
                 allMoves.add(new ChessMove(position, toMove, null));
             }
             else{
                 break;
             }
-            if(!IsPieceNull(toMove, board)){
+            if(!MovesCalcUtils.isPieceNull(toMove, board)){
                 break;
             }
         }

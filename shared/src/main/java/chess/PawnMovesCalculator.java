@@ -26,29 +26,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         moves.add(new ChessMove(curr, toMove, ChessPiece.PieceType.BISHOP));
     }
 
-    private boolean IsPieceNull(ChessPosition newPosition, ChessBoard board) {
 
-        ChessPiece otherPiece = board.getPiece(newPosition);
-
-        return otherPiece == null;
-
-    }
-
-    private boolean isValidMove(ChessPosition currPosition, ChessPosition newPosition, ChessBoard board) {
-
-        ChessPiece currPiece = board.getPiece(currPosition);
-        ChessGame.TeamColor selfColor = currPiece.getTeamColor();
-        ChessPiece otherPiece = board.getPiece(newPosition);
-        if (otherPiece == null) {
-            return true;
-        }
-
-        return otherPiece.getTeamColor() != selfColor;
-
-    }
-
-
-    // TODO: Implement Promotion Pieces.
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
 
         Collection<ChessMove> allMoves = new ArrayList<ChessMove>();
@@ -78,7 +56,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
                 toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[1][0], position.getBoardColumn() + moveDiagonal[1][1]);
             }
 
-                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                if (MovesCalcUtils.isValidMove(position, toMove, board) && !MovesCalcUtils.isPieceNull(toMove, board)) {
                     allMoves.add(new ChessMove(position, toMove, null));
                 }
 
@@ -94,7 +72,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
                     toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[0][0], position.getBoardColumn() + moveDiagonal[0][1]);
 
                 }
-                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                if (MovesCalcUtils.isValidMove(position, toMove, board) && !MovesCalcUtils.isPieceNull(toMove, board)) {
                     allMoves.add(new ChessMove(position, toMove, null));
                 }
             }
@@ -105,7 +83,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
                 // Need to ensure that pawn doesn't jump over a piece
                 ChessPosition intermedPos = new ChessPosition(position.getBoardRow() + moveOne, position.getBoardColumn());
 
-                if (isValidMove(position, toMove, board) && IsPieceNull(toMove, board) && IsPieceNull(intermedPos, board)) {
+                if (MovesCalcUtils.isValidMove(position, toMove, board) && MovesCalcUtils.isPieceNull(toMove, board) && MovesCalcUtils.isPieceNull(intermedPos, board)) {
                     allMoves.add(new ChessMove(position, toMove, null));
                 }
 
@@ -117,12 +95,12 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             if ((position.getRow() == 1 || position.getRow() == 6) && position.getColumn() > 0 && position.getColumn() < 7 && possiblePromotion) {
                 // Check Right Diagonal
                 toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[0][0], position.getBoardColumn() + moveDiagonal[0][1]);
-                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                if (MovesCalcUtils.isValidMove(position, toMove, board) && !MovesCalcUtils.isPieceNull(toMove, board)) {
                     addPromotePieces(allMoves, position, toMove);
                 }
                 // Check Left Diagonal
                 toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[1][0], position.getBoardColumn() + moveDiagonal[1][1]);
-                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                if (MovesCalcUtils.isValidMove(position, toMove, board) && !MovesCalcUtils.isPieceNull(toMove, board)) {
                     addPromotePieces(allMoves, position, toMove);
                 }
 
@@ -135,7 +113,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
 
                 // Need to see if they can make right diagonal
                 toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[0][0], position.getBoardColumn() + moveDiagonal[0][1]);
-                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                if (MovesCalcUtils.isValidMove(position, toMove, board) && !MovesCalcUtils.isPieceNull(toMove, board)) {
                     addPromotePieces(allMoves, position, toMove);
                 }
             }
@@ -144,7 +122,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             if (possiblePromotion && position.getColumn() == 7 && (position.getRow() == 1 || position.getRow() == 6)) {
 
                 toMove = new ChessPosition(position.getBoardRow() + moveDiagonal[0][0], position.getBoardColumn() + moveDiagonal[0][1]);
-                if (isValidMove(position, toMove, board) && !IsPieceNull(toMove, board)) {
+                if (MovesCalcUtils.isValidMove(position, toMove, board) && !MovesCalcUtils.isPieceNull(toMove, board)) {
                     addPromotePieces(allMoves, position, toMove);
                 }
             }
@@ -154,7 +132,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             if(possiblePromotion && (position.getRow() == 6 || position.getRow() == 1)){
                 toMove = new ChessPosition(position.getBoardRow() + moveOne, position.getBoardColumn());
 
-                if(isValidMove(position, toMove, board) && IsPieceNull(toMove, board)){
+                if(MovesCalcUtils.isValidMove(position, toMove, board) && MovesCalcUtils.isPieceNull(toMove, board)){
                     addPromotePieces(allMoves, position, toMove);
                 }
             }
@@ -163,7 +141,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             if(!possiblePromotion){
                toMove = new ChessPosition(position.getBoardRow() + moveOne, position.getBoardColumn());
 
-               if(isValidMove(position, toMove, board) && IsPieceNull(toMove, board)){
+               if(MovesCalcUtils.isValidMove(position, toMove, board) && MovesCalcUtils.isPieceNull(toMove, board)){
                    allMoves.add(new ChessMove(position, toMove, null));
                }
 
