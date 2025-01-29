@@ -1,42 +1,31 @@
 package chess;
 
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class KnightMovesCalculator implements PieceMovesCalculator {
-    KnightMovesCalculator() {
 
+    private int[][] knightMoves;
+
+    KnightMovesCalculator() {
+        this.knightMoves = new int[][]{{2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
     }
 
-
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        Collection<ChessMove> allMoves = new ArrayList<ChessMove>();
-
-        ChessPiece knightPiece = board.getPiece(position);
-        ChessPosition toMove;
-
-        if (knightPiece.getPieceType() != ChessPiece.PieceType.KNIGHT) {
-            throw new RuntimeException("Piece is not a pawn");
-        }
-
-        int[][] kMoves = {{-1, 2}, {-1, -2}, {1, 2}, {1, -2}};
-
-
-        for(int[] arr : kMoves){
-
-            toMove = new ChessPosition(position.getBoardRow() + arr[0], position.getBoardColumn() + arr[1]);
-
-            if(MovesCalcUtils.isInBounds(toMove) && MovesCalcUtils.isValidMove(position, toMove,  board)){
-                allMoves.add(new ChessMove(position, toMove, null));
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
+        Collection<ChessMove> allMoves = new ArrayList<>();
+        ChessMove toMove;
+        for (int[] move : this.knightMoves) {
+            toMove = new ChessMove(pos, new ChessPosition(pos.getRow() + move[0], pos.getColumn() + move[1]), null);
+            if (PieceUtils.isValidMove(board, toMove)) {
+                allMoves.add(toMove);
             }
 
-            toMove = new ChessPosition(position.getBoardRow() + arr[1], position.getBoardColumn() + arr[0]);
-            if(MovesCalcUtils.isInBounds(toMove) && MovesCalcUtils.isValidMove(position,toMove, board)){
-                allMoves.add(new ChessMove(position, toMove, null));
+            toMove = new ChessMove(pos, new ChessPosition(pos.getRow() + move[1], pos.getColumn() + move[0]), null);
+            if (PieceUtils.isValidMove(board, toMove)) {
+                allMoves.add(toMove);
             }
+
         }
 
 

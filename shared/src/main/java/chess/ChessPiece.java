@@ -11,21 +11,33 @@ import java.util.Objects;
  */
 public class ChessPiece {
     private ChessGame.TeamColor pieceColor;
-    private ChessPiece.PieceType type;
-    private boolean hasMoved;
-    private PieceMovesCalculator calculator;
+    private PieceType type;
+    private PieceMovesCalculator movesCalc;
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
-        this.hasMoved = false;
-        switch(this.type){
-            case KING -> this.calculator = new KingMovesCalculator();
-            case QUEEN -> this.calculator = new QueenMovesCalculator();
-            case BISHOP -> this.calculator = new BishopMovesCalculator();
-            case KNIGHT -> this.calculator = new KnightMovesCalculator();
-            case ROOK -> this.calculator = new RookMovesCalculator();
-            case PAWN -> this.calculator = new PawnMovesCalculator();
+
+        switch (type){
+            case ROOK -> this.movesCalc = new RookMovesCalculator();
+            case BISHOP -> this.movesCalc = new BishopMovesCalculator();
+            case QUEEN -> this.movesCalc = new QueenMovesCalculator();
+            case KING -> this.movesCalc = new KingMovesCalculator();
+            case KNIGHT -> this.movesCalc = new KnightMovesCalculator();
+            case PAWN -> this.movesCalc = new PawnMovesCalculator();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
     }
 
     /**
@@ -39,19 +51,7 @@ public class ChessPiece {
         ROOK,
         PAWN
     }
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ChessPiece that = (ChessPiece) o;
-        if( that.getPieceType() != this.type) return false;
-        return that.getTeamColor() == this.pieceColor;
-    }
-    @Override
-    public int hashCode(){
-        return 31 * (this.pieceColor.ordinal() + this.type.ordinal());
-    }
+
     /**
      * @return Which team this chess piece belongs to
      */
@@ -74,14 +74,6 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return this.calculator.pieceMoves(board, myPosition);
-    }
-
-    public boolean getHasMoved(){
-        return this.hasMoved;
-    }
-
-    public void setHasMoved(){
-        this.hasMoved = true;
+        return movesCalc.pieceMoves(board, myPosition);
     }
 }
