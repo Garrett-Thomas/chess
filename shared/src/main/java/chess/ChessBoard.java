@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -17,14 +19,67 @@ public class ChessBoard {
         this.board = new ChessPiece[8][8];
     }
 
+    public ChessBoard(ChessBoard board) {
+        this.board = new ChessPiece[8][8];
+
+        for (int i = 0; i < 8; i++) {
+            System.arraycopy(board.board[i], 0, this.board[i], 0, 8);
+        }
+        ;
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
      * @param position where to add the piece to
      * @param piece    the piece to add
      */
+
+
     public void addPiece(ChessPosition position, ChessPiece piece) {
         this.board[position.getColumn() - 1][8 - position.getRow()] = piece;
+
+    }
+
+    public ChessPosition getKing(ChessGame.TeamColor color) {
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece currPiece = this.board[i][j];
+
+                if (currPiece != null && currPiece.getPieceType() == ChessPiece.PieceType.KING && currPiece.getTeamColor() == color) {
+                    return new ChessPosition(8 - j, i + 1);
+                }
+            }
+        }
+
+        return null;
+    }
+
+
+    public Collection<ChessMove> getAllPieceMoves(ChessPosition teamKingPos) {
+
+        Collection<ChessMove> allMoves = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            Collection<ChessMove> pieceMoves = new ArrayList<ChessMove>();
+            for (int j = 0; j < 8; j++) {
+
+                ChessPosition currPos = new ChessPosition(i + 1, j + 1);
+                ChessPiece currPiece = getPiece(currPos);
+
+                if (currPiece != null) {
+                    pieceMoves.addAll(currPiece.pieceMoves(this, currPos));
+                    boolean containsKing = pieceMoves.stream().anyMatch(currMove -> currMove.getEndPosition() == teamKingPos);
+                    if (!pieceMoves.isEmpty() && !containsKing) {
+                        allMoves.add(pieceMoves);
+
+                    }
+                }
+
+
+            }
+        }
+        return allMoves;
 
     }
 
@@ -39,9 +94,17 @@ public class ChessBoard {
         return this.board[position.getColumn() - 1][8 - position.getRow()];
     }
 
+    public void movePiece(ChessMove move) {
+        this.board[move.getEndPosition().getColumn() - 1][8 - move.getEndPosition().getRow()] = this.board[move.getStartPosition().getColumn() - 1][8 - move.getEndPosition().getRow()];
+        this.board[move.getStartPosition().getColumn() - 1][8 - move.getEndPosition().getRow()] = null;
+
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessBoard that = (ChessBoard) o;
         return Objects.deepEquals(board, that.board);
     }

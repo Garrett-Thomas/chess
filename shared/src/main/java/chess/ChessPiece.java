@@ -27,7 +27,11 @@ public class ChessPiece {
             case PAWN -> this.movesCalc = new PawnMovesCalculator();
         }
     }
-
+    public ChessPiece(ChessPiece other){
+        this.pieceColor = other.pieceColor;
+        this.type = other.type;
+        this.movesCalc = other.movesCalc;
+    }
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

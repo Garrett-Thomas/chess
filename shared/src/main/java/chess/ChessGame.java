@@ -1,6 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -10,15 +13,33 @@ import java.util.Collection;
  */
 public class ChessGame {
 
+    TeamColor teamTurn;
+    ChessBoard board;
     public ChessGame() {
-
+    this.teamTurn = TeamColor.WHITE;
+    this.board = new ChessBoard();
     }
 
+    private Collection<ChessPosition> getEnemyPositions(TeamColor enemyColor){
+
+        Collection<ChessPosition> enemyPos = new ArrayList<>();
+        for(int i = 1; i < 9; i++){
+            for(int j = 1 ; j < 9; j++){
+               ChessPosition pos = new ChessPosition(i, j);
+
+               if(this.board.getPiece(pos) != null && this.board.getPiece(pos).getTeamColor() == enemyColor){
+                  enemyPos.add(pos);
+               }
+            }
+        }
+
+       return enemyPos;
+    }
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return this.teamTurn;
     }
 
     /**
@@ -27,7 +48,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        this.teamTurn = team;
     }
 
     /**
@@ -45,8 +66,41 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
+
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+
+        // This is mostly equivalent to piece moves - all moves that put the King in a
+        // position to be killed
+        // I could iterate over all piece moves of each piece when I chang the position of the currPiece
+        // Then I simply check if the Kings position is part of the set and if it is then I can't do it
+
+        ChessPiece currPiece = this.board.getPiece(startPosition);
+        TeamColor currColor = currPiece.getTeamColor();
+        ChessPosition teamKingPos = this.board.getKing(currColor);
+
+        if(currPiece == null) return null;
+
+//        if(currPiece.getPieceType() == ChessPiece.PieceType.KING){
+//            return null;
+//        }
+
+        else{
+
+           Collection<ChessMove> possibleMoves = currPiece.pieceMoves(this.board, startPosition);
+            Collection<ChessMove> validatedMoves = new HashSet<>();
+
+
+            // I really want to move a piece, see if the other pieces can attack the king then throw away that move
+            for(ChessMove move : possibleMoves){
+                ChessBoard temp = this.board;
+                temp.movePiece(move);
+                temp.getAllPieceMoves(teamKingPos);
+            }
+
+
+
+        }
+
     }
 
     /**
@@ -96,7 +150,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -105,6 +159,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.board;
     }
 }
