@@ -15,26 +15,28 @@ public class ChessGame {
 
     TeamColor teamTurn;
     ChessBoard board;
+
     public ChessGame() {
-    this.teamTurn = TeamColor.WHITE;
-    this.board = new ChessBoard();
+        this.teamTurn = TeamColor.WHITE;
+        this.board = new ChessBoard();
     }
 
-    private Collection<ChessPosition> getEnemyPositions(TeamColor enemyColor){
+    private Collection<ChessPosition> getEnemyPositions(TeamColor enemyColor) {
 
         Collection<ChessPosition> enemyPos = new ArrayList<>();
-        for(int i = 1; i < 9; i++){
-            for(int j = 1 ; j < 9; j++){
-               ChessPosition pos = new ChessPosition(i, j);
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition pos = new ChessPosition(i, j);
 
-               if(this.board.getPiece(pos) != null && this.board.getPiece(pos).getTeamColor() == enemyColor){
-                  enemyPos.add(pos);
-               }
+                if (this.board.getPiece(pos) != null && this.board.getPiece(pos).getTeamColor() == enemyColor) {
+                    enemyPos.add(pos);
+                }
             }
         }
 
-       return enemyPos;
+        return enemyPos;
     }
+
     /**
      * @return Which team's turn it is
      */
@@ -75,30 +77,44 @@ public class ChessGame {
         // Then I simply check if the Kings position is part of the set and if it is then I can't do it
 
         ChessPiece currPiece = this.board.getPiece(startPosition);
-        if(currPiece == null) return null;
+        if (currPiece == null) {
+            return new ArrayList<>();
+        }
 
         TeamColor currColor = currPiece.getTeamColor();
         ChessPosition teamKingPos = this.board.getKing(currColor);
 
 
-           Collection<ChessMove> possibleMoves = currPiece.pieceMoves(this.board, startPosition);
-            Collection<ChessMove> validatedMoves = new ArrayList<>();
+        Collection<ChessMove> possibleMoves = currPiece.pieceMoves(this.board, startPosition);
+        Collection<ChessMove> validatedMoves = new ArrayList<>();
 
+
+        // Need to only allow moves that don't move king into check
 
             // I really want to move a piece, see if the other pieces can attack the king then throw away that move
-            for(ChessMove move : possibleMoves){
+            for (ChessMove move : possibleMoves) {
                 ChessBoard temp = new ChessBoard(this.board);
                 boolean moveMade = temp.movePiece(move);
 
-                if(!moveMade) continue;
+                if (!moveMade) {
+                    continue;
+                }
 
-                boolean res = temp.isValidBoard(teamKingPos);
-                if(res){
+                boolean res;
+                if(currPiece.getPieceType() == ChessPiece.PieceType.KING){
+
+                    res = temp.isValidBoard(move.getEndPosition());
+                }
+
+                else{
+
+                    res = temp.isValidBoard(teamKingPos);
+                }
+                if (res) {
                     validatedMoves.add(move);
                 }
             }
-
-    return validatedMoves;
+        return validatedMoves;
 
     }
 
