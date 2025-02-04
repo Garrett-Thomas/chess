@@ -22,10 +22,23 @@ public class ChessBoard {
     public ChessBoard(ChessBoard board) {
         this.board = new ChessPiece[8][8];
 
+
         for (int i = 0; i < 8; i++) {
-            System.arraycopy(board.board[i], 0, this.board[i], 0, 8);
+            for (int j = 0; j < 8; j++) {
+
+                if (board.board[i][j] == null) {
+                    this.board[i][j] = null;
+                    continue;
+                }
+
+                this.board[i][j] = new ChessPiece(board.board[i][j]);
+            }
         }
-        ;
+//
+//        for (int i = 0; i < 8; i++) {
+//            System.arraycopy(board.board[i], 0, this.board[i], 0, 8);
+//        }
+//        ;
     }
 
     /**
@@ -57,9 +70,10 @@ public class ChessBoard {
     }
 
 
-    public Collection<ChessMove> getAllPieceMoves(ChessPosition teamKingPos) {
+    public boolean isValidBoard(ChessPosition teamKingPos) {
 
-        Collection<ChessMove> allMoves = new ArrayList<>();
+        ChessGame.TeamColor kingColor = getPiece(teamKingPos).getTeamColor();
+
         for (int i = 0; i < 8; i++) {
             Collection<ChessMove> pieceMoves = new ArrayList<ChessMove>();
             for (int j = 0; j < 8; j++) {
@@ -67,19 +81,19 @@ public class ChessBoard {
                 ChessPosition currPos = new ChessPosition(i + 1, j + 1);
                 ChessPiece currPiece = getPiece(currPos);
 
-                if (currPiece != null) {
+                if (currPiece != null && currPiece.getTeamColor() != kingColor) {
                     pieceMoves.addAll(currPiece.pieceMoves(this, currPos));
-                    boolean containsKing = pieceMoves.stream().anyMatch(currMove -> currMove.getEndPosition() == teamKingPos);
-                    if (!pieceMoves.isEmpty() && !containsKing) {
-                        allMoves.add(pieceMoves);
-
+                    boolean containsKing = pieceMoves.stream().anyMatch(currMove -> currMove.getEndPosition().equals(teamKingPos));
+                    if (containsKing) {
+                        return false;
                     }
                 }
 
 
             }
         }
-        return allMoves;
+
+        return true;
 
     }
 
@@ -90,14 +104,29 @@ public class ChessBoard {
      * @return Either the piece at the position, or null if no piece is at that
      * position
      */
+
+
+    // 1 -> 7
+    // 8 -> 0
     public ChessPiece getPiece(ChessPosition position) {
         return this.board[position.getColumn() - 1][8 - position.getRow()];
     }
 
-    public void movePiece(ChessMove move) {
-        this.board[move.getEndPosition().getColumn() - 1][8 - move.getEndPosition().getRow()] = this.board[move.getStartPosition().getColumn() - 1][8 - move.getEndPosition().getRow()];
-        this.board[move.getStartPosition().getColumn() - 1][8 - move.getEndPosition().getRow()] = null;
+    public boolean movePiece(ChessMove move) {
 
+        ChessPiece startPiece = getPiece(move.getStartPosition());
+        ChessPiece endPiece = getPiece(move.getEndPosition());
+
+        if ( endPiece != null && startPiece.getTeamColor() == endPiece.getTeamColor()) {
+            return false;
+        }
+
+
+        this.board[move.getEndPosition().getColumn() - 1][8 - move.getEndPosition().getRow()] = this.board[move.getStartPosition().getColumn() - 1][8 - move.getStartPosition().getRow()];
+        this.board[move.getStartPosition().getColumn() - 1][8 - move.getStartPosition().getRow()] = null;
+
+
+        return true;
     }
 
     @Override

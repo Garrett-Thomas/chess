@@ -75,31 +75,30 @@ public class ChessGame {
         // Then I simply check if the Kings position is part of the set and if it is then I can't do it
 
         ChessPiece currPiece = this.board.getPiece(startPosition);
+        if(currPiece == null) return null;
+
         TeamColor currColor = currPiece.getTeamColor();
         ChessPosition teamKingPos = this.board.getKing(currColor);
 
-        if(currPiece == null) return null;
-
-//        if(currPiece.getPieceType() == ChessPiece.PieceType.KING){
-//            return null;
-//        }
-
-        else{
 
            Collection<ChessMove> possibleMoves = currPiece.pieceMoves(this.board, startPosition);
-            Collection<ChessMove> validatedMoves = new HashSet<>();
+            Collection<ChessMove> validatedMoves = new ArrayList<>();
 
 
             // I really want to move a piece, see if the other pieces can attack the king then throw away that move
             for(ChessMove move : possibleMoves){
-                ChessBoard temp = this.board;
-                temp.movePiece(move);
-                temp.getAllPieceMoves(teamKingPos);
+                ChessBoard temp = new ChessBoard(this.board);
+                boolean moveMade = temp.movePiece(move);
+
+                if(!moveMade) continue;
+
+                boolean res = temp.isValidBoard(teamKingPos);
+                if(res){
+                    validatedMoves.add(move);
+                }
             }
 
-
-
-        }
+    return validatedMoves;
 
     }
 
