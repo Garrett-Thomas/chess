@@ -152,6 +152,8 @@ public class ChessGame {
 
         Collection<ChessMove> kingMoves = validMoves(king);
 
+        if(isInCheckmate(teamColor)) return true;
+
         if (kingMoves.isEmpty()) {
             return false;
         }
