@@ -2,7 +2,6 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -91,29 +90,27 @@ public class ChessGame {
 
         // Need to only allow moves that don't move king into check
 
-            // I really want to move a piece, see if the other pieces can attack the king then throw away that move
-            for (ChessMove move : possibleMoves) {
-                ChessBoard temp = new ChessBoard(this.board);
-                boolean moveMade = temp.movePiece(move);
+        // I really want to move a piece, see if the other pieces can attack the king then throw away that move
+        for (ChessMove move : possibleMoves) {
+            ChessBoard temp = new ChessBoard(this.board);
+            boolean moveMade = temp.movePiece(move);
 
-                if (!moveMade) {
-                    continue;
-                }
-
-                boolean res;
-                if(currPiece.getPieceType() == ChessPiece.PieceType.KING){
-
-                    res = temp.isValidBoard(move.getEndPosition());
-                }
-
-                else{
-
-                    res = temp.isValidBoard(teamKingPos);
-                }
-                if (res) {
-                    validatedMoves.add(move);
-                }
+            if (!moveMade) {
+                continue;
             }
+
+            boolean res;
+            if (currPiece.getPieceType() == ChessPiece.PieceType.KING) {
+
+                res = temp.isValidBoard(move.getEndPosition());
+            } else {
+
+                res = temp.isValidBoard(teamKingPos);
+            }
+            if (res) {
+                validatedMoves.add(move);
+            }
+        }
         return validatedMoves;
 
     }
@@ -125,7 +122,21 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece currPiece = this.board.getPiece(move.getStartPosition());
+
+
+        if (currPiece == null || currPiece.getTeamColor() != this.teamTurn) {
+            throw new InvalidMoveException();
+        }
+
+        if (!validMoves(move.getStartPosition()).contains(move)) {
+            throw new InvalidMoveException();
+        }
+        if (!this.board.movePiece(move)) {
+            throw new InvalidMoveException();
+        }
+
+        setTeamTurn(this.teamTurn == TeamColor.BLACK ? TeamColor.WHITE : TeamColor.BLACK);
     }
 
     /**
@@ -135,7 +146,30 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
+        ChessPosition king = this.board.getKing(teamColor);
+
+        Collection<ChessMove> kingMoves = validMoves(king);
+
+        if (kingMoves.isEmpty()) {
+            return false;
+        }
+
+        Collection<ChessPosition> enemyPos = getEnemyPositions(teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE);
+
+        for (ChessPosition pos : enemyPos) {
+            Collection<ChessMove> posMoves = validMoves(pos);
+
+            boolean res = posMoves.stream().anyMatch(move -> (move.getEndPosition().equals(king)) && kingMoves.stream().noneMatch(kingMove -> kingMove.getEndPosition().equals(move.getStartPosition())));
+            if (res) {
+                return true;
+            }
+        }
+
+        return false;
+        // Need to see if the king can move and if he is included in at least one of the opponents valid moves
+
+
     }
 
     /**
@@ -145,7 +179,60 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
+        ChessPosition king = this.board.getKing(teamColor);
+
+        Collection<ChessMove> kingMoves = validMoves(king);
+
+        if (!kingMoves.isEmpty()) {
+            return false;
+        }
+
+        Collection<ChessPosition> enemyPos = getEnemyPositions(teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE);
+        Collection<ChessPosition> friendlyPos = getEnemyPositions(teamColor);
+
+        Collection<ChessMove> friendlyMoves = new ArrayList<>();
+        for (ChessPosition pos : friendlyPos) {
+            friendlyMoves.addAll(validMoves(pos));
+        }
+
+        Collection<ChessMove> enemyMoves = new ArrayList<>();
+        for (ChessPosition pos : enemyPos) {
+            // Get all moves that have the King as their end position
+            enemyMoves.addAll(validMoves(pos).stream().filter(move -> move.getEndPosition().equals(king)).collect(Collectors.toCollection(ArrayList::new)));
+        }
+
+        // AKA initially the king can't move but no other piece can capture him
+        if (enemyMoves.isEmpty()) {
+            return false;
+        }
+
+        // Now this contains only the moves that can take the pieces that can take the king
+        friendlyMoves = friendlyMoves.stream().filter(friendlyMove -> enemyMoves.stream().anyMatch(enemyMove -> friendlyMove.getEndPosition().equals(enemyMove.getStartPosition()))).collect(Collectors.toCollection(ArrayList::new));
+
+
+        // Now need to iterate through friendly moves by making the move, then seeing if that leads to a checkmate
+
+
+        for (ChessMove friendlyMove : friendlyMoves) {
+
+            ChessBoard testBoard = new ChessBoard(this.board);
+
+
+            testBoard.movePiece(friendlyMove);
+
+            ChessGame testGame = new ChessGame();
+            testGame.setBoard(testBoard);
+
+            if (!testGame.validMoves(king).isEmpty()) {
+                return false;
+            }
+
+
+        }
+
+
+        return true;
     }
 
     /**
@@ -156,7 +243,19 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
+        // Mutually exclusive check and stalemate states
+        if (isInCheck(TeamColor.WHITE) || isInCheck(TeamColor.BLACK)) {
+            return false;
+        }
+
+
+        Collection<ChessPosition> allMoves = getEnemyPositions(TeamColor.WHITE);
+        allMoves.addAll(getEnemyPositions(TeamColor.BLACK));
+
+        return allMoves.stream().map(this::validMoves).collect(Collectors.toCollection(ArrayList::new)).isEmpty();
+
+
     }
 
     /**

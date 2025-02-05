@@ -17,6 +17,7 @@ public class ChessBoard {
 
     public ChessBoard() {
         this.board = new ChessPiece[8][8];
+        resetBoard();
     }
 
     public ChessBoard(ChessBoard board) {
@@ -113,7 +114,6 @@ public class ChessBoard {
     }
 
     public boolean movePiece(ChessMove move) {
-
         ChessPiece startPiece = getPiece(move.getStartPosition());
         ChessPiece endPiece = getPiece(move.getEndPosition());
 
@@ -121,10 +121,16 @@ public class ChessBoard {
             return false;
         }
 
+        if(move.getPromotionPiece() == null){
 
-        this.board[move.getEndPosition().getColumn() - 1][8 - move.getEndPosition().getRow()] = this.board[move.getStartPosition().getColumn() - 1][8 - move.getStartPosition().getRow()];
-        this.board[move.getStartPosition().getColumn() - 1][8 - move.getStartPosition().getRow()] = null;
+            this.board[move.getEndPosition().getColumn() - 1][8 - move.getEndPosition().getRow()] = this.board[move.getStartPosition().getColumn() - 1][8 - move.getStartPosition().getRow()];
+            this.board[move.getStartPosition().getColumn() - 1][8 - move.getStartPosition().getRow()] = null;
+        }
+        else{
 
+            this.board[move.getEndPosition().getColumn() - 1][8 - move.getEndPosition().getRow()] = new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece());
+            this.board[move.getStartPosition().getColumn() - 1][8 - move.getStartPosition().getRow()] = null;
+        }
 
         return true;
     }
