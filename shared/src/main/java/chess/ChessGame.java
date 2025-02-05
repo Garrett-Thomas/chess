@@ -172,7 +172,6 @@ public class ChessGame {
         return false;
         // Need to see if the king can move and if he is included in at least one of the opponents valid moves
 
-
     }
 
     /**
@@ -181,25 +180,35 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
+
     public boolean isInCheckmate(TeamColor teamColor) {
 
         ChessPosition king = this.board.getKing(teamColor);
 
         Collection<ChessMove> kingMoves = validMoves(king);
 
+
+        // If no valid king moves then its in checkmate
         if (!kingMoves.isEmpty()) {
             return false;
         }
 
+
+        // Gets all enemy positions
         Collection<ChessPosition> enemyPos = getEnemyPositions(teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE);
+
+        // Gets all friendly positions
         Collection<ChessPosition> friendlyPos = getEnemyPositions(teamColor);
 
         Collection<ChessMove> friendlyMoves = new ArrayList<>();
+
+        // Calculates all possible moves friendly pieces can make
         for (ChessPosition pos : friendlyPos) {
             friendlyMoves.addAll(validMoves(pos));
         }
 
         Collection<ChessMove> enemyMoves = new ArrayList<>();
+
         for (ChessPosition pos : enemyPos) {
             // Get all moves that have the King as their end position
             enemyMoves.addAll(validMoves(pos).stream().filter(move -> move.getEndPosition().equals(king)).collect(Collectors.toCollection(ArrayList::new)));
@@ -215,8 +224,6 @@ public class ChessGame {
 
 
         // Now need to iterate through friendly moves by making the move, then seeing if that leads to a checkmate
-
-
         for (ChessMove friendlyMove : friendlyMoves) {
 
             ChessBoard testBoard = new ChessBoard(this.board);
