@@ -93,20 +93,22 @@ public class ChessGame {
 
         // I really want to move a piece, see if the other pieces can attack the king then throw away that move
         for (ChessMove move : possibleMoves) {
-            ChessBoard temp = new ChessBoard(this.board);
-            boolean moveMade = temp.movePiece(move);
+            ChessBoard testBoard = new ChessBoard(this.board);
+            boolean moveMade = testBoard.movePiece(move);
 
             if (!moveMade) {
                 continue;
             }
 
             boolean res;
+
+            // Special rules apply to king
             if (currPiece.getPieceType() == ChessPiece.PieceType.KING) {
 
-                res = temp.isValidBoard(move.getEndPosition());
+                res = testBoard.isValidBoard(move.getEndPosition());
             } else {
 
-                res = temp.isValidBoard(teamKingPos);
+                res = testBoard.isValidBoard(teamKingPos);
             }
             if (res) {
                 validatedMoves.add(move);
@@ -264,9 +266,9 @@ public class ChessGame {
 
         ArrayList<Collection<ChessMove>> res  =  (allMoves.stream().map(this::validMoves)).collect(Collectors.toCollection(ArrayList::new));
 
-       var thisRes = res.stream().anyMatch(pieceMoves-> !pieceMoves.isEmpty());
+        // If every piece has no moves then in stalemate
+        return res.stream().allMatch(Collection::isEmpty);
 
-        return !thisRes;
     }
 
     /**
@@ -275,6 +277,8 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
+
+        // This ensures that we have an empty ChessBoard
         this.board = new ChessBoard();
         this.board = new ChessBoard(board);
     }
