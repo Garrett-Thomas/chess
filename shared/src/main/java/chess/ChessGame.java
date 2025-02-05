@@ -18,6 +18,7 @@ public class ChessGame {
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
         this.board = new ChessBoard();
+        this.board.resetBoard();
     }
 
     private Collection<ChessPosition> getEnemyPositions(TeamColor enemyColor) {
@@ -250,12 +251,13 @@ public class ChessGame {
         }
 
 
-        Collection<ChessPosition> allMoves = getEnemyPositions(TeamColor.WHITE);
-        allMoves.addAll(getEnemyPositions(TeamColor.BLACK));
+        Collection<ChessPosition> allMoves = getEnemyPositions(teamColor);
 
-        return allMoves.stream().map(this::validMoves).collect(Collectors.toCollection(ArrayList::new)).isEmpty();
+        ArrayList<Collection<ChessMove>> res  =  (allMoves.stream().map(this::validMoves)).collect(Collectors.toCollection(ArrayList::new));
 
+       var thisRes = res.stream().anyMatch(pieceMoves-> !pieceMoves.isEmpty());
 
+        return !thisRes;
     }
 
     /**
@@ -264,7 +266,8 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        this.board = board;
+        this.board = new ChessBoard();
+        this.board = new ChessBoard(board);
     }
 
     /**

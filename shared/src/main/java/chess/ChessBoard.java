@@ -17,7 +17,7 @@ public class ChessBoard {
 
     public ChessBoard() {
         this.board = new ChessPiece[8][8];
-        resetBoard();
+
     }
 
     public ChessBoard(ChessBoard board) {
@@ -35,11 +35,7 @@ public class ChessBoard {
                 this.board[i][j] = new ChessPiece(board.board[i][j]);
             }
         }
-//
-//        for (int i = 0; i < 8; i++) {
-//            System.arraycopy(board.board[i], 0, this.board[i], 0, 8);
-//        }
-//        ;
+
     }
 
     /**
@@ -51,7 +47,7 @@ public class ChessBoard {
 
 
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        this.board[position.getColumn() - 1][8 - position.getRow()] = piece;
+        this.board[position.getColumn() - 1][8 - position.getRow()] = new ChessPiece(piece);
 
     }
 
