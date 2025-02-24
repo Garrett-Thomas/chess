@@ -1,0 +1,93 @@
+package dao;
+
+import dataaccess.DataAccessException;
+import model.UserData;
+import org.junit.jupiter.api.*;
+import server.AuthDAO;
+import server.MemoryAuthDAO;
+
+
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class DaoTests {
+    private final AuthDAO authDAO;
+    private final UserData john;
+
+
+    public DaoTests() {
+        this.authDAO = new MemoryAuthDAO();
+        this.john = new UserData("John Doe", "password123", "john@gmail.com");
+
+    }
+
+    @Test
+    @Order(1)
+    @DisplayName("Test add user")
+    public void makeUser() {
+        try {
+
+            this.authDAO.addUser(john);
+        } catch (Exception e) {
+            assert (false);
+        }
+
+
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Test get user by username")
+    public void getUser() {
+
+        try {
+            this.authDAO.addUser(john);
+            var res = this.authDAO.getUser(this.john.username());
+            assert (res == this.john);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Get nonexistent user by name")
+    public void getFakeUser() {
+        try {
+            var res = this.authDAO.getUser("random");
+
+        } catch (DataAccessException e) {
+            assert (true);
+            return;
+        }
+
+        assert (false);
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Get auth token for user")
+    public void getAuthToken() {
+        try {
+            this.authDAO.addUser(john);
+            var token = this.authDAO.createAuth(john.username());
+            assert(token != null);
+        } catch (DataAccessException e) {
+            assert (false);
+        }
+
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Delete auth token")
+    public void deleteAuthToken() {
+        try {
+            this.authDAO.addUser(john);
+            var token = this.authDAO.createAuth(john.username());
+            this.authDAO.deleteAuthToken(token);
+        } catch (DataAccessException e) {
+            assert (false);
+        }
+
+    }
+}
