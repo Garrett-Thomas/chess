@@ -52,15 +52,10 @@ public class DaoTests {
     @Order(3)
     @DisplayName("Get nonexistent user by name")
     public void getFakeUser() {
-        try {
-            var res = this.authDAO.getUser("random");
+        var res = this.authDAO.getUser("random");
 
-        } catch (DataAccessException e) {
-            assert (true);
-            return;
-        }
 
-        assert (false);
+        assert (res == null);
     }
 
     @Test

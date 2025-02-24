@@ -29,13 +29,9 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
 
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username){
 
-        var user = this.userData.get(username);
-        if (user == null) {
-            throw new DataAccessException("User does not exist");
-        }
-        return user;
+        return this.userData.get(username);
     }
 
     public String createAuth(String username) throws DataAccessException {
@@ -51,9 +47,11 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void deleteAuthToken(String token) throws DataAccessException{
+    public void deleteAuthToken(String token) throws DataAccessException {
 
-        if(this.authUsers.get(token) == null) throw new DataAccessException("Auth token not found");
+        if (this.authUsers.get(token) == null) {
+            throw new DataAccessException("Auth token not found");
+        }
 
         this.authUsers.remove(token);
 

@@ -11,10 +11,10 @@ public class LoginRequest {
 
     }
 
-    String getUsername(){
+    public String getUsername(){
         return this.username;
     }
-    String getPassword(){
+    public String getPassword(){
         return this.password;
     }
 
