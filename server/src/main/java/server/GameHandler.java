@@ -5,7 +5,6 @@ import dao.MemoryAuthDAO;
 import dataaccess.ServiceException;
 import model.GamesRequest;
 import model.GamesResult;
-import model.TestRecord;
 import service.GameService;
 import spark.Request;
 import spark.Response;

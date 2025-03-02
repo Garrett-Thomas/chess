@@ -2,9 +2,7 @@ package service;
 
 import model.GamesRequest;
 import model.GamesResult;
-import dao.AuthDAO;
 import dao.GameDAO;
-import dao.MemoryAuthDAO;
 import dao.MemoryGameDAO;
 
 public class GameService {

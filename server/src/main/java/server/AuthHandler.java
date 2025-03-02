@@ -2,7 +2,10 @@ package server;
 
 import dataaccess.DataAccessException;
 import dataaccess.ServiceException;
-import model.*;
+import model.LoginResponse;
+import model.LogoutRequest;
+import model.RegisterRequest;
+import model.UserData;
 import service.AuthService;
 import spark.*;
 import com.google.gson.Gson;

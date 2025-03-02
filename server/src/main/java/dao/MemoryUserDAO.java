@@ -1,6 +1,5 @@
 package dao;
 
-import dataaccess.DataAccessException;
 import dataaccess.ServiceException;
 import model.UserData;
 
