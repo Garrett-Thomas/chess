@@ -8,10 +8,17 @@ import java.util.Objects;
 
 public class LoginService {
 
-    private AuthDAO authDAO;
+    private final AuthDAO authDAO;
+    private final UserDAO userDAO;
 
     public LoginService() {
-        this.authDAO = new MemoryAuthDAO();
+        this.authDAO = MemoryAuthDAO.getInstance();
+        this.userDAO = MemoryUserDAO.getInstance();
+    }
+
+    public void logout(LogoutRequest logoutReq) throws DataAccessException {
+        this.authDAO.deleteAuthToken(logoutReq.authToken());
+
     }
 
     public LoginResponse register(UserData req) throws DataAccessException {
@@ -22,11 +29,11 @@ public class LoginService {
             throw new DataAccessException("Field(s) cannot be empty");
         }
 
-        if (this.authDAO.getUser(username) != null) {
+        if (this.userDAO.getUser(username) != null) {
             throw new DataAccessException("User already exists");
         }
 
-        this.authDAO.addUser(req);
+        this.userDAO.addUser(req);
 
         var token = this.authDAO.createAuth(username);
 
@@ -37,7 +44,7 @@ public class LoginService {
 
     public LoginResponse login(LoginRequest res) throws DataAccessException {
 
-        var userData = this.authDAO.getUser(res.getUsername());
+        var userData = this.userDAO.getUser(res.getUsername());
         if(userData == null){
             throw new DataAccessException("User does not exist");
         }

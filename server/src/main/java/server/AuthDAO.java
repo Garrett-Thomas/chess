@@ -4,15 +4,16 @@ import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 
+import java.util.Map;
+
 public interface AuthDAO {
 
-    public UserData getUser(String username);
 
-    public void addUser(UserData userData) throws DataAccessException;
+
+    boolean validateAuth(String token);
 
     public String createAuth(String username) throws DataAccessException;
 
     void deleteAuthToken(String token) throws DataAccessException;
-
 
 }

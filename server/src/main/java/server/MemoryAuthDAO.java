@@ -5,42 +5,25 @@ import java.util.Map;
 import java.util.UUID;
 
 import dataaccess.DataAccessException;
-import model.AuthData;
-import model.UserData;
 
 public class MemoryAuthDAO implements AuthDAO {
 
-    private final Map<String, UserData> userData;
-
+    private static MemoryAuthDAO memDAO = null;
 
     // Map of auth token to username
     private final Map<String, String> authUsers;
 
     public MemoryAuthDAO() {
-        this.userData = new HashMap<>();
         this.authUsers = new HashMap<>();
     }
 
-    public void addUser(UserData userData) throws DataAccessException {
-        if (this.userData.get(userData.username()) != null) {
-            throw new DataAccessException("Username taken");
-        }
-        this.userData.put(userData.username(), userData);
-    }
 
-
-    public UserData getUser(String username){
-
-        return this.userData.get(username);
+    public boolean validateAuth(String token){
+        return this.authUsers.get(token) != null;
     }
 
     public String createAuth(String username) throws DataAccessException {
         var token = UUID.randomUUID().toString();
-        var userData = this.userData.get(username);
-
-        if (userData == null) {
-            throw new DataAccessException("Cannot authenticate a user that doesn't exist");
-        }
         this.authUsers.put(token, username);
 
         return token;
@@ -56,5 +39,13 @@ public class MemoryAuthDAO implements AuthDAO {
         this.authUsers.remove(token);
 
 
+    }
+
+    public static synchronized MemoryAuthDAO getInstance() {
+        if (memDAO == null) {
+            memDAO = new MemoryAuthDAO();
+        }
+
+        return memDAO;
     }
 }

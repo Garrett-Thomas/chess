@@ -4,20 +4,26 @@ import dataaccess.DataAccessException;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.AuthDAO;
+import server.UserDAO;
+import server.MemoryUserDAO;
 import server.MemoryAuthDAO;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DaoTests {
     private final AuthDAO authDAO;
+    private final UserDAO userDAO;
+
     private final UserData john;
 
 
     public DaoTests() {
         this.authDAO = new MemoryAuthDAO();
+        this.userDAO = new MemoryUserDAO();
         this.john = new UserData("John Doe", "password123", "john@gmail.com");
 
     }
+
 
     @Test
     @Order(1)
@@ -25,7 +31,7 @@ public class DaoTests {
     public void makeUser() {
         try {
 
-            this.authDAO.addUser(john);
+            this.userDAO.addUser(john);
         } catch (Exception e) {
             assert (false);
         }
@@ -39,8 +45,8 @@ public class DaoTests {
     public void getUser() {
 
         try {
-            this.authDAO.addUser(john);
-            var res = this.authDAO.getUser(this.john.username());
+            this.userDAO.addUser(john);
+            var res = this.userDAO.getUser(this.john.username());
             assert (res == this.john);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
@@ -52,7 +58,7 @@ public class DaoTests {
     @Order(3)
     @DisplayName("Get nonexistent user by name")
     public void getFakeUser() {
-        var res = this.authDAO.getUser("random");
+        var res = this.userDAO.getUser("random");
 
 
         assert (res == null);
@@ -63,7 +69,7 @@ public class DaoTests {
     @DisplayName("Get auth token for user")
     public void getAuthToken() {
         try {
-            this.authDAO.addUser(john);
+            this.userDAO.addUser(john);
             var token = this.authDAO.createAuth(john.username());
             assert(token != null);
         } catch (DataAccessException e) {
@@ -77,7 +83,7 @@ public class DaoTests {
     @DisplayName("Delete auth token")
     public void deleteAuthToken() {
         try {
-            this.authDAO.addUser(john);
+            this.userDAO.addUser(john);
             var token = this.authDAO.createAuth(john.username());
             this.authDAO.deleteAuthToken(token);
         } catch (DataAccessException e) {
