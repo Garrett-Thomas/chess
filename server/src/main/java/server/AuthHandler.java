@@ -3,17 +3,17 @@ package server;
 import dataaccess.DataAccessException;
 import dataaccess.ServiceException;
 import model.*;
-import service.LoginService;
+import service.AuthService;
 import spark.*;
 import com.google.gson.Gson;
 
 
 public class AuthHandler {
 
-    private final LoginService loginService;
+    private final AuthService authService;
 
     AuthHandler() {
-        this.loginService = new LoginService();
+        this.authService = new AuthService();
     }
 
 
@@ -22,7 +22,7 @@ public class AuthHandler {
 
         var delReq = new LogoutRequest(req.headers("Authorization"));
 
-        this.loginService.logout(delReq);
+        this.authService.logout(delReq);
 
         return new Gson().toJson(null);
 
@@ -32,7 +32,7 @@ public class AuthHandler {
     public Object postRegister(Request req, spark.Response res) throws ServiceException {
 
         var registerReq = new Gson().fromJson(req.body(), UserData.class);
-        var regResult = this.loginService.register(registerReq);
+        var regResult = this.authService.register(registerReq);
         return new Gson().toJson(regResult);
 
     }
@@ -41,7 +41,7 @@ public class AuthHandler {
 
         var loginRequest = new Gson().fromJson(req.body(), RegisterRequest.LoginRequest.class);
 
-        LoginResponse loginRes = this.loginService.login(loginRequest);
+        LoginResponse loginRes = this.authService.login(loginRequest);
 
         return new Gson().toJson(loginRes);
 

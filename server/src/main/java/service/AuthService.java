@@ -4,7 +4,6 @@ import dao.AuthDAO;
 import dao.MemoryAuthDAO;
 import dao.MemoryUserDAO;
 import dao.UserDAO;
-import dataaccess.DataAccessException;
 import dataaccess.ServiceException;
 import model.LoginResponse;
 import model.LogoutRequest;
@@ -13,12 +12,12 @@ import model.UserData;
 
 import java.util.Objects;
 
-public class LoginService {
+public class AuthService {
 
     private final AuthDAO authDAO;
     private final UserDAO userDAO;
 
-    public LoginService() {
+    public AuthService() {
         this.authDAO = MemoryAuthDAO.getInstance();
         this.userDAO = MemoryUserDAO.getInstance();
     }
