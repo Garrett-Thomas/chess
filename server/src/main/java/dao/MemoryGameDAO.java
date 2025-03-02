@@ -9,22 +9,21 @@ public class MemoryGameDAO implements GameDAO {
 
     private static GameDAO gameDAO = null;
 
-    private final Map<String, GameData> gameData;
+    private static Map<String, GameData> gameData = new HashMap<>();
 
 
     MemoryGameDAO() {
-        this.gameData = new HashMap<>();
     }
 
     @Override
     public ArrayList<GameData> getGames() {
-        return new ArrayList<>(this.gameData.values());
+        return new ArrayList<>(gameData.values());
     }
 
     @Override
     public String createGame(String gameName) {
         String gameID = UUID.randomUUID().toString();
-        this.gameData.put(gameID, new GameData(gameID, null, null, gameName, null));
+        gameData.put(gameID, new GameData(gameID, null, null, gameName, null));
 
         return gameID;
     }
@@ -32,7 +31,7 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public void joinGame(String playerName, String playerColor, String gameID) throws Exception {
 
-        GameData game = this.gameData.get(gameID);
+        GameData game = gameData.get(gameID);
         GameData updatedGame;
 
         if (game == null) {
@@ -50,11 +49,12 @@ public class MemoryGameDAO implements GameDAO {
         } else {
             throw new ServiceException(400, "playerColor not equal to black or white");
         }
-        this.gameData.put(game.gameID(), updatedGame);
+        gameData.put(game.gameID(), updatedGame);
     }
 
     public void clear(){
         gameDAO = new MemoryGameDAO();
+        gameData = new HashMap<>();
     }
 
     public static synchronized GameDAO getInstance() {

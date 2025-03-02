@@ -82,7 +82,7 @@ public class DaoTests {
             this.userDAO.addUser(john);
             var token = this.authDAO.createAuth(john.username());
             this.authDAO.deleteAuthToken(token);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             assert (false);
         }
 

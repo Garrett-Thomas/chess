@@ -5,8 +5,11 @@ import dao.MemoryAuthDAO;
 import dao.MemoryUserDAO;
 import dao.UserDAO;
 import dataaccess.DataAccessException;
+import dataaccess.ServiceException;
+import model.LoginResponse;
+import model.LogoutRequest;
+import model.RegisterRequest;
 import model.UserData;
-import server.*;
 
 import java.util.Objects;
 
@@ -20,21 +23,21 @@ public class LoginService {
         this.userDAO = MemoryUserDAO.getInstance();
     }
 
-    public void logout(LogoutRequest logoutReq) throws DataAccessException {
+    public void logout(LogoutRequest logoutReq) throws ServiceException {
         this.authDAO.deleteAuthToken(logoutReq.authToken());
 
     }
 
-    public LoginResponse register(UserData req) throws DataAccessException {
+    public LoginResponse register(UserData req) throws ServiceException {
 
         var username = req.username();
         if (username.isEmpty() || req.password().isEmpty() || req.email().isEmpty()) {
 
-            throw new DataAccessException("Field(s) cannot be empty");
+            throw new ServiceException(400, "Field(s) cannot be empty");
         }
 
         if (this.userDAO.getUser(username) != null) {
-            throw new DataAccessException("User already exists");
+            throw new ServiceException(403, "User already exists");
         }
 
         this.userDAO.addUser(req);
@@ -46,14 +49,14 @@ public class LoginService {
 
     }
 
-    public LoginResponse login(LoginRequest res) throws DataAccessException {
+    public LoginResponse login(RegisterRequest.LoginRequest res) throws ServiceException {
 
-        var userData = this.userDAO.getUser(res.getUsername());
+        var userData = this.userDAO.getUser(res.username());
         if(userData == null){
-            throw new DataAccessException("User does not exist");
+            throw new ServiceException(401, "User does not exist");
         }
-        if (!Objects.equals(userData.password(), res.getPassword())) {
-            throw new DataAccessException("Invalid username");
+        if (!Objects.equals(userData.password(), res.password())) {
+            throw new ServiceException(401, "Invalid password");
         }
 
         var token = this.authDAO.createAuth(userData.username());

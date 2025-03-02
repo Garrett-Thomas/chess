@@ -1,11 +1,14 @@
 package server;
 
 import com.google.gson.Gson;
+import dao.MemoryAuthDAO;
+import dao.MemoryGameDAO;
+import dao.MemoryUserDAO;
 import dataaccess.ServiceException;
+import model.ResponseSuper;
 import spark.*;
 
 import static spark.Spark.before;
-import static spark.route.HttpMethod.before;
 
 public class Server {
     private final AuthHandler authHandler;
@@ -39,7 +42,12 @@ public class Server {
         Spark.put("/game", this.gameHandler::joinGame);
         Spark.get("/game",  this.gameHandler::listGames);
         Spark.post("/game", this.gameHandler::createGame);
-
+        Spark.delete("/db", (Request req, Response res)->{
+            MemoryUserDAO.getInstance().clear();
+            MemoryGameDAO.getInstance().clear();
+            MemoryAuthDAO.getInstance().clear();
+            return new Gson().toJson(null);
+        });
 
 
 
