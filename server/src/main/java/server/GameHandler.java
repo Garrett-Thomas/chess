@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import dao.MemoryAuthDAO;
 import dataaccess.ServiceException;
 import model.GamesRequest;
+import model.GamesResult;
+import model.TestRecord;
 import service.GameService;
 import spark.Request;
 import spark.Response;
@@ -30,7 +32,7 @@ public class GameHandler {
             throw new ServiceException(400, "gameName is null");
         }
 
-        var gameRes = gameService.createGame(gameReq);
+        GamesResult gameRes = gameService.createGame(gameReq);
 
         return new Gson().toJson(gameRes);
 
@@ -47,12 +49,12 @@ public class GameHandler {
         }
         String token = req.headers("authorization");
 
-       String username = MemoryAuthDAO.getInstance().getUsername(token);
+        String username = MemoryAuthDAO.getInstance().getUsername(token);
 
 
-       this.gameService.joinGame(gameReq, username);
+        this.gameService.joinGame(gameReq, username);
 
-       return new Gson().toJson("");
+        return new Gson().toJson(null);
 
     }
 }

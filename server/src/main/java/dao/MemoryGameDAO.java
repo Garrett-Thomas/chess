@@ -9,7 +9,7 @@ public class MemoryGameDAO implements GameDAO {
 
     private static GameDAO gameDAO = null;
 
-    private static Map<String, GameData> gameData = new HashMap<>();
+    private static Map<Integer, GameData> gameData = new HashMap<>();
 
 
     MemoryGameDAO() {
@@ -21,32 +21,40 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public String createGame(String gameName) {
-        String gameID = UUID.randomUUID().toString();
+    public Integer createGame(String gameName) {
+
+        Integer gameID = Math.abs(UUID.randomUUID().hashCode());
         gameData.put(gameID, new GameData(gameID, null, null, gameName, null));
 
         return gameID;
     }
 
     @Override
-    public void joinGame(String playerName, String playerColor, String gameID) throws Exception {
+    public void joinGame(String playerName, String playerColor, int gameID) throws Exception {
 
         GameData game = gameData.get(gameID);
+        String blackUsername = game.blackUsername();
+        String whiteUsername = game.whiteUsername();
+
+        boolean isBlack = Objects.equals(playerColor, "BLACK");
+        boolean isWhite =  Objects.equals(playerColor, "WHITE");
         GameData updatedGame;
 
-        if (game == null) {
-            throw new ServiceException(400, "Game does not exist");
-        }
-
-        if (game.blackUsername() != null && game.whiteUsername() != null) {
+        if (blackUsername != null && whiteUsername != null) {
             throw new ServiceException(403, "Game already taken");
         }
 
-        if (Objects.equals(playerColor, "BLACK")) {
+        if (isBlack && blackUsername == null) {
             updatedGame = new GameData(game.gameID(), game.whiteUsername(), playerName, game.gameName(), game.game());
-        } else if (Objects.equals(playerColor, "WHITE")) {
+        } else if (isWhite && whiteUsername == null) {
             updatedGame = new GameData(game.gameID(), playerName, game.blackUsername(), game.gameName(), game.game());
-        } else {
+
+        }
+        else if((isBlack && !blackUsername.isEmpty()) || isWhite && !whiteUsername.isEmpty()){
+
+            throw new ServiceException(403, "Color already taken");
+        }
+        else {
             throw new ServiceException(400, "playerColor not equal to black or white");
         }
         gameData.put(game.gameID(), updatedGame);

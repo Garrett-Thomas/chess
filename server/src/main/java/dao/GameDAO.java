@@ -9,9 +9,9 @@ public interface GameDAO {
 
     public ArrayList<GameData> getGames();
 
-    public String createGame(String gameName);
+    public Integer createGame(String gameName);
 
-    public void joinGame(String playerName, String playerColor, String gameID) throws Exception;
+    public void joinGame(String playerName, String playerColor, int gameID) throws Exception;
     void clear();
 
 }

@@ -11,16 +11,13 @@ public class GameService {
 
     private final GameDAO gameDAO;
 
-    private final AuthDAO authDAO;
     public GameService() {
         this.gameDAO = MemoryGameDAO.getInstance();
-        this.authDAO = MemoryAuthDAO.getInstance();
-
     }
 
 
     public GamesResult createGame(GamesRequest gamesRequest) {
-        String gameID = this.gameDAO.createGame(gamesRequest.gameName());
+        Integer gameID = this.gameDAO.createGame(gamesRequest.gameName());
 
         return new GamesResult(gameID, null);
     }
