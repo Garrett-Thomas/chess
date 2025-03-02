@@ -31,7 +31,7 @@ public class LoginService {
     public LoginResponse register(UserData req) throws ServiceException {
 
         var username = req.username();
-        if (username.isEmpty() || req.password().isEmpty() || req.email().isEmpty()) {
+        if (username == null || req.password() == null || req.email() == null) {
 
             throw new ServiceException(400, "Field(s) cannot be empty");
         }

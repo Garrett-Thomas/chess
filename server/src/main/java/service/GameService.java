@@ -31,9 +31,9 @@ public class GameService {
     }
 
 
-    public GamesResult joinGame(GamesRequest gamesRequest, String playerName) throws Exception {
+    public void joinGame(GamesRequest gamesRequest, String playerName) throws Exception {
 
         this.gameDAO.joinGame(playerName, gamesRequest.playerColor(), gamesRequest.gameID());
-        return new GamesResult(null, null);
+        new GamesResult(null, null);
     }
 }

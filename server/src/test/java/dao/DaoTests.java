@@ -44,7 +44,7 @@ public class DaoTests {
             this.userDAO.addUser(john);
             var res = this.userDAO.getUser(this.john.username());
             assert (res == this.john);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -68,7 +68,7 @@ public class DaoTests {
             this.userDAO.addUser(john);
             var token = this.authDAO.createAuth(john.username());
             assert(token != null);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             assert (false);
         }
 

@@ -25,16 +25,19 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public void addUser(UserData clientData) throws ServiceException {
+
         if (userData.get(clientData.username()) != null) {
-            throw new DataAccessException("Username taken");
+            throw new ServiceException(403, "Username already taken");
         }
+
         userData.put(clientData.username(), clientData);
     }
 
-    public void clear(){
+    public void clear() {
         userDAO = new MemoryUserDAO();
         userData = new HashMap<>();
     }
+
     public static synchronized MemoryUserDAO getInstance() {
         if (userDAO == null) {
             userDAO = new MemoryUserDAO();
