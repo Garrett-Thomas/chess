@@ -1,4 +1,4 @@
-package server;
+package dao;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +22,10 @@ public class MemoryAuthDAO implements AuthDAO {
         return this.authUsers.get(token) != null;
     }
 
+    public String getUsername(String token){
+        return this.authUsers.get(token);
+    }
+
     public String createAuth(String username) throws DataAccessException {
         var token = UUID.randomUUID().toString();
         this.authUsers.put(token, username);
@@ -39,6 +43,10 @@ public class MemoryAuthDAO implements AuthDAO {
         this.authUsers.remove(token);
 
 
+    }
+
+    public void clear(){
+        memDAO = new MemoryAuthDAO();
     }
 
     public static synchronized MemoryAuthDAO getInstance() {

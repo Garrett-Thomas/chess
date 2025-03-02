@@ -3,10 +3,6 @@ package dao;
 import dataaccess.DataAccessException;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import server.AuthDAO;
-import server.UserDAO;
-import server.MemoryUserDAO;
-import server.MemoryAuthDAO;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

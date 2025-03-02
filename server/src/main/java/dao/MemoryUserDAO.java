@@ -1,4 +1,4 @@
-package server;
+package dao;
 
 import dataaccess.DataAccessException;
 import model.UserData;
@@ -31,6 +31,9 @@ public class MemoryUserDAO implements UserDAO {
         this.userData.put(userData.username(), userData);
     }
 
+    public void clear(){
+        userDAO = new MemoryUserDAO();
+    }
     public static synchronized MemoryUserDAO getInstance() {
         if (userDAO == null) {
             userDAO = new MemoryUserDAO();

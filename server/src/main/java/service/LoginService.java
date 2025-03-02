@@ -1,5 +1,9 @@
 package service;
 
+import dao.AuthDAO;
+import dao.MemoryAuthDAO;
+import dao.MemoryUserDAO;
+import dao.UserDAO;
 import dataaccess.DataAccessException;
 import model.UserData;
 import server.*;

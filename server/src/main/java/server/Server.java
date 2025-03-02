@@ -20,24 +20,24 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
- // Register your endpoints and handle exceptions here.
+        // Register your endpoints and handle exceptions here.
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
-        Spark.delete("/session", this.authHandler::deleteToken);
-        Spark.post("/session", this.authHandler::postLogin);
-        Spark.post("/user", this.authHandler::postRegister);
-
         Spark.exception(ServiceException.class, (ServiceException se, Request req, Response res) ->{
             res.status(se.getStatusCode());
-            res.body(new Gson().toJson(new ResponseSuper(se.getMessage()));
+
+            System.err.println(se.getMessage());
+            res.body(new Gson().toJson(new ResponseSuper(se.getResponse())));
         });
 
 
 
-
+        Spark.delete("/session", this.authHandler::deleteToken);
+        Spark.post("/session", this.authHandler::postLogin);
+        Spark.post("/user", this.authHandler::postRegister);
+        Spark.put("/game", this.gameHandler::joinGame);
         Spark.get("/game",  this.gameHandler::listGames);
-
         Spark.post("/game", this.gameHandler::createGame);
 
 

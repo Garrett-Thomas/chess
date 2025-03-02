@@ -1,6 +1,7 @@
 package server;
 
 import dataaccess.DataAccessException;
+import dataaccess.ServiceException;
 import model.UserData;
 import service.LoginService;
 import spark.*;
@@ -16,18 +17,15 @@ public class AuthHandler {
     }
 
 
-    public Object deleteToken(Request req, spark.Response res) {
-        try {
-
+    public Object deleteToken(Request req, spark.Response res) throws ServiceException, DataAccessException {
+            ServerUtils.authUser(req, res);
 
             var delReq = new LogoutRequest(req.headers("Authorization"));
 
             this.loginService.logout(delReq);
 
             return new Gson().toJson("");
-        } catch (DataAccessException e) {
-            return new Gson().toJson(new ResponseSuper(e.getMessage()));
-        }
+
 
 
     }

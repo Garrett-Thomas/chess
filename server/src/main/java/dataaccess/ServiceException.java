@@ -10,7 +10,7 @@ public class ServiceException extends Exception {
     private final static Map<Integer, String> codeToRes = Map.of(400, "Error: bad request", 401, "Error: unauthorized", 403, "Error: already taken");
 
 
-    ServiceException(int statusCode, String message) {
+    public ServiceException(int statusCode, String message) {
         super(message);
         this.message = message;
         this.statusCode = statusCode;

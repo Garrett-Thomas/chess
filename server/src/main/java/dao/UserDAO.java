@@ -1,4 +1,4 @@
-package server;
+package dao;
 
 import dataaccess.DataAccessException;
 import model.UserData;
@@ -10,5 +10,6 @@ public interface UserDAO {
 
     public void addUser(UserData userData) throws DataAccessException;
 
+    void clear();
 
 }
