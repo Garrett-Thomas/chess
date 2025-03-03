@@ -119,6 +119,15 @@ public class ServiceTests {
         assert (true);
     }
 
+    @Test
+    public void testListGamesNegative() {
+        try {
+
+            gameService.listGames();
+        } catch (Exception e) {
+            assert (false);
+        }
+    }
 
     @Test
     public void testJoinGamePositive() {
