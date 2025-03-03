@@ -32,18 +32,24 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         int selector = pieceCol == ChessGame.TeamColor.WHITE ? 0 : 1;
         ChessMove toMove;
 
+        int row;
+        int col;
         // First if pawn not near either side
         if (pos.getRow() < 7 && pos.getRow() > 2) {
 
             for (int[] move : this.diagMoves[selector]) {
-                toMove = new ChessMove(pos, new ChessPosition(pos.getRow() + move[1], pos.getColumn() + move[0]), null);
+                row = pos.getRow() + move[1];
+                col = pos.getColumn() + move[0];
+                toMove = new ChessMove(pos, new ChessPosition(row, col), null);
                 if (PieceUtils.isValidMove(board, toMove) && PieceUtils.isTakeMove(board, toMove)) {
                     allMoves.add(toMove);
                 }
             }
 
             // Check forward moves
-            toMove = new ChessMove(pos, new ChessPosition(pos.getRow() + this.forwardMoves[selector][1], pos.getColumn() + this.forwardMoves[selector][0]), null);
+            row = pos.getRow() + this.forwardMoves[selector][1];
+            col = pos.getColumn() + this.forwardMoves[selector][0];
+            toMove = new ChessMove(pos, new ChessPosition(row, col), null);
 
             if (PieceUtils.isValidMove(board, toMove) && !PieceUtils.isTakeMove(board, toMove)) {
                 allMoves.add(toMove);
@@ -54,20 +60,33 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         // Check first move is 2 && if move 2 then cannot jump over
         if (pos.getRow() == 2 && selector == 0 || pos.getRow() == 7 && selector == 1) {
 
-            toMove = new ChessMove(pos, new ChessPosition(pos.getRow() + this.startMoves[selector][1], pos.getColumn() + this.startMoves[selector][0]), null);
-            ChessPiece intermedPiece = board.getPiece(new ChessPosition(pos.getRow() + this.startMoves[selector][1] + (selector == 0 ? -1 : 1), pos.getColumn() + this.startMoves[selector][0]));
+            row = pos.getRow() + this.startMoves[selector][1];
+            col = pos.getColumn() + this.startMoves[selector][0];
+
+            toMove = new ChessMove(pos, new ChessPosition(row, col), null);
+
+            row = pos.getRow() + this.startMoves[selector][1] + (selector == 0 ? -1 : 1);
+            col = pos.getColumn() + this.startMoves[selector][0];
+
+            ChessPiece intermedPiece = board.getPiece(new ChessPosition(row, col));
 
             if (PieceUtils.isValidMove(board, toMove) && intermedPiece == null && !PieceUtils.isTakeMove(board, toMove)) {
                 allMoves.add(toMove);
             }
 
-            toMove = new ChessMove(pos, new ChessPosition(pos.getRow() + this.forwardMoves[selector][1], pos.getColumn() + this.forwardMoves[selector][0]), null);
+            row = pos.getRow() + this.forwardMoves[selector][1];
+            col = pos.getColumn() + this.forwardMoves[selector][0];
+            toMove = new ChessMove(pos, new ChessPosition(row, col), null);
+
             if (PieceUtils.isValidMove(board, toMove)) {
                 allMoves.add(toMove);
             }
 
             for (int[] possibleMove : this.diagMoves[selector]) {
-                toMove = new ChessMove(pos, new ChessPosition(pos.getRow() + possibleMove[1], pos.getColumn() + possibleMove[0]), null);
+
+                row = pos.getRow() + possibleMove[1];
+                col = pos.getColumn() + possibleMove[0];
+                toMove = new ChessMove(pos, new ChessPosition(row, col), null);
                 if (PieceUtils.isValidMove(board, toMove) && PieceUtils.isTakeMove(board, toMove)) {
                     allMoves.add(toMove);
                 }
@@ -78,14 +97,19 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         // Check edges and promotion
         if (pos.getRow() == 7 && selector == 0 || pos.getRow() == 2 && selector == 1) {
             for (int[] move : this.diagMoves[selector]) {
-                toMove = new ChessMove(pos, new ChessPosition(pos.getRow() + move[1], pos.getColumn() + move[0]), null);
+
+                row = pos.getRow() + move[1];
+                col = pos.getColumn() + move[0];
+                toMove = new ChessMove(pos, new ChessPosition(row, col), null);
                 if (PieceUtils.isValidMove(board, toMove) && PieceUtils.isTakeMove(board, toMove)) {
                     allMoves.addAll(addPromotionPiece(toMove));
                 }
 
             }
 
-            toMove = new ChessMove(pos, new ChessPosition(pos.getRow() + this.forwardMoves[selector][1], pos.getColumn() + this.forwardMoves[selector][0]), null);
+            row = pos.getRow() + this.forwardMoves[selector][1];
+            col = pos.getColumn() + this.forwardMoves[selector][0];
+            toMove = new ChessMove(pos, new ChessPosition(row, col), null);
             if (PieceUtils.isValidMove(board, toMove) && !PieceUtils.isTakeMove(board, toMove)) {
                 allMoves.addAll(addPromotionPiece(toMove));
             }

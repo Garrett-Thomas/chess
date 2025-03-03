@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -171,6 +172,7 @@ public class ChessGame {
             Collection<ChessMove> posMoves = validMoves(pos);
 
             Predicate<ChessMove> moveEndIsKing = move -> (move.getEndPosition().equals(king));
+            BiPredicate<ChessMove, ChessMove> compKing = (kingMove, move) -> kingMove.getEndPosition().equals(move.getStartPosition());
             Predicate<ChessMove> intermed = move -> kingMoves.stream().noneMatch(kingMove -> compKing.test(kingMove, move));
             Predicate<ChessMove> kingEndIsStart = move -> moveEndIsKing.test(move) && intermed.test(move);
 
@@ -222,7 +224,10 @@ public class ChessGame {
 
         for (ChessPosition pos : enemyPos) {
             // Get all moves that have the King as their end position
-            enemyMoves.addAll(validMoves(pos).stream().filter(move -> move.getEndPosition().equals(king)).collect(Collectors.toCollection(ArrayList::new)));
+
+            Predicate<ChessMove> getMov = move -> move.getEndPosition().equals(king);
+
+            enemyMoves.addAll(validMoves(pos).stream().filter(getMov).collect(Collectors.toCollection(ArrayList::new)));
         }
 
         // AKA initially the king can't move but no other piece can capture him
@@ -230,8 +235,11 @@ public class ChessGame {
             return false;
         }
 
+
+        Predicate<ChessMove> canKill = move -> enemyMoves.stream().anyMatch(enemyMove -> move.getEndPosition().equals(enemyMove.getStartPosition()));
+
         // Now this contains only the moves that can take the pieces that can take the king
-        friendlyMoves = friendlyMoves.stream().filter(friendlyMove -> enemyMoves.stream().anyMatch(enemyMove -> friendlyMove.getEndPosition().equals(enemyMove.getStartPosition()))).collect(Collectors.toCollection(ArrayList::new));
+        friendlyMoves = friendlyMoves.stream().filter(canKill).collect(Collectors.toCollection(ArrayList::new));
 
 
         // Now need to iterate through friendly moves by making the move, then seeing if that leads to a checkmate
