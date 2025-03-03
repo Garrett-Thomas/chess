@@ -2,6 +2,8 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -154,7 +156,9 @@ public class ChessGame {
 
         Collection<ChessMove> kingMoves = validMoves(king);
 
-        if(isInCheckmate(teamColor)) return true;
+        if (isInCheckmate(teamColor)) {
+            return true;
+        }
 
         if (kingMoves.isEmpty()) {
             return false;
@@ -165,7 +169,9 @@ public class ChessGame {
         for (ChessPosition pos : enemyPos) {
             Collection<ChessMove> posMoves = validMoves(pos);
 
-            var res = posMoves.stream().anyMatch(move -> (move.getEndPosition().equals(king)) && kingMoves.stream().noneMatch(kingMove -> kingMove.getEndPosition().equals(move.getStartPosition())));
+            Predicate<ChessMove> kingEndIsStart = move -> (move.getEndPosition().equals(king)) && kingMoves.stream().noneMatch(kingMove -> kingMove.getEndPosition().equals(move.getStartPosition()));
+
+            var res = posMoves.stream().anyMatch(kingEndIsStart);
             if (res) {
                 return true;
             }
@@ -264,7 +270,7 @@ public class ChessGame {
 
         Collection<ChessPosition> allMoves = getEnemyPositions(teamColor);
 
-        ArrayList<Collection<ChessMove>> res  =  (allMoves.stream().map(this::validMoves)).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<Collection<ChessMove>> res = (allMoves.stream().map(this::validMoves)).collect(Collectors.toCollection(ArrayList::new));
 
         // If every piece has no moves then in stalemate
         return res.stream().allMatch(Collection::isEmpty);

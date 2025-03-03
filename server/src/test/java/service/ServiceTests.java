@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class ServiceTests {
     private static AuthService authService = new AuthService();
     private static GameService gameService = new GameService();
-    private static final GamesRequest gameReq = new GamesRequest("hello", null, "BLACK");
+    private static final GamesRequest GAME_REQ = new GamesRequest("hello", null, "BLACK");
 
     @BeforeAll
     public static void init() {
@@ -124,7 +124,7 @@ public class ServiceTests {
     public void testJoinGamePositive() {
 
 
-        var gameRes = gameService.createGame(gameReq);
+        var gameRes = gameService.createGame(GAME_REQ);
 
         try {
 
