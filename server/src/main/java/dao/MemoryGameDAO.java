@@ -30,7 +30,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void joinGame(String playerName, String playerColor, int gameID) throws Exception {
+    public void joinGame(String playerName, String playerColor, int gameID) throws ServiceException{
 
         GameData game = gameData.get(gameID);
         String blackUsername = game.blackUsername();

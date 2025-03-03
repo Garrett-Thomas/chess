@@ -1,5 +1,6 @@
 package dao;
 
+import dataaccess.ServiceException;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public interface GameDAO {
 
     public Integer createGame(String gameName);
 
-    public void joinGame(String playerName, String playerColor, int gameID) throws Exception;
+    public void joinGame(String playerName, String playerColor, int gameID) throws ServiceException;
     void clear();
 
 }
