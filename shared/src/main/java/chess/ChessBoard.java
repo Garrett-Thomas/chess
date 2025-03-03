@@ -112,20 +112,26 @@ public class ChessBoard {
     public boolean movePiece(ChessMove move) {
         ChessPiece startPiece = getPiece(move.getStartPosition());
         ChessPiece endPiece = getPiece(move.getEndPosition());
-
-        if ( endPiece != null && startPiece.getTeamColor() == endPiece.getTeamColor()) {
+        int row;
+        int col;
+        if (endPiece != null && startPiece.getTeamColor() == endPiece.getTeamColor()) {
             return false;
         }
 
-        if(move.getPromotionPiece() == null){
+        col = move.getEndPosition().getColumn() - 1;
+        row = 8 - move.getEndPosition().getRow();
+        int colStart = move.getStartPosition().getColumn() - 1;
+        int rowStart = 8 - move.getStartPosition().getRow();
 
-            this.board[move.getEndPosition().getColumn() - 1][8 - move.getEndPosition().getRow()] = this.board[move.getStartPosition().getColumn() - 1][8 - move.getStartPosition().getRow()];
-            this.board[move.getStartPosition().getColumn() - 1][8 - move.getStartPosition().getRow()] = null;
-        }
-        else{
+        if (move.getPromotionPiece() == null) {
 
-            this.board[move.getEndPosition().getColumn() - 1][8 - move.getEndPosition().getRow()] = new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece());
-            this.board[move.getStartPosition().getColumn() - 1][8 - move.getStartPosition().getRow()] = null;
+            this.board[col][row] = this.board[colStart][rowStart];
+
+            this.board[colStart][rowStart] = null;
+        } else {
+
+            this.board[col][row] = new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece());
+            this.board[colStart][rowStart] = null;
         }
 
         return true;
