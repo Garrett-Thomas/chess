@@ -13,7 +13,6 @@ public class MemoryAuthDAO implements AuthDAO {
 
     // Map of auth token to username
     private static Map<String, String> authUsers = new HashMap<>();
-    ;
 
     public MemoryAuthDAO() {
     }

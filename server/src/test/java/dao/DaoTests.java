@@ -42,23 +42,24 @@ public class DaoTests {
 
 
     }
+
     @Test
     @DisplayName("Test double add user")
-    public void doubleUser(){
-        try{
+    public void doubleUser() {
+        try {
             this.userDAO.addUser(john);
             this.userDAO.addUser(john);
-            assert(false);
+            assert (false);
         } catch (ServiceException e) {
-            assert(true);
+            assert (true);
         }
     }
 
-   @Test
-   @DisplayName("Test clear userDao")
-   public void clearDAO(){
-            this.userDAO.clear();
-   }
+    @Test
+    @DisplayName("Test clear userDao")
+    public void clearDAO() {
+        this.userDAO.clear();
+    }
 
 
     @Test
@@ -93,6 +94,12 @@ public class DaoTests {
     }
 
     @Test
+    @DisplayName("Clear auth dao")
+    public void clearAuthDAO() {
+        this.authDAO.clear();
+    }
+
+    @Test
     @Order(4)
     @DisplayName("Get auth token for user")
     public void getAuthToken() {
@@ -118,6 +125,31 @@ public class DaoTests {
             assert (false);
         }
 
+    }
+
+    @Test
+    @DisplayName("Delete non-existent token")
+    public void deleteNonToken() {
+        try {
+            this.authDAO.deleteAuthToken("Newton");
+            assert (false);
+        } catch (ServiceException e) {
+            assert (true);
+
+        }
+    }
+
+    @Test
+    @DisplayName("Test get username from token")
+    public void getUserFromToken() {
+        try {
+            var name = "felipe";
+            var token = this.authDAO.createAuth(name);
+            assert (name.equals(this.authDAO.getUsername(token)));
+        } catch (Exception e) {
+            assert (false);
+
+        }
     }
 
     @Test
