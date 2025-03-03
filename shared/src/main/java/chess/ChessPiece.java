@@ -18,7 +18,7 @@ public class ChessPiece {
         this.pieceColor = pieceColor;
         this.type = type;
 
-        switch (type){
+        switch (type) {
             case ROOK -> this.movesCalc = new RookMovesCalculator();
             case BISHOP -> this.movesCalc = new BishopMovesCalculator();
             case QUEEN -> this.movesCalc = new QueenMovesCalculator();
@@ -27,14 +27,19 @@ public class ChessPiece {
             case PAWN -> this.movesCalc = new PawnMovesCalculator();
         }
     }
-    public ChessPiece(ChessPiece other){
+
+    public ChessPiece(ChessPiece other) {
         this.pieceColor = other.pieceColor;
         this.type = other.type;
         this.movesCalc = other.movesCalc;
     }
+
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
         ChessPiece that = (ChessPiece) o;
         return pieceColor == that.pieceColor && type == that.type;
     }

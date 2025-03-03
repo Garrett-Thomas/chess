@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -169,7 +170,9 @@ public class ChessGame {
         for (ChessPosition pos : enemyPos) {
             Collection<ChessMove> posMoves = validMoves(pos);
 
-            Predicate<ChessMove> kingEndIsStart = move -> (move.getEndPosition().equals(king)) && kingMoves.stream().noneMatch(kingMove -> kingMove.getEndPosition().equals(move.getStartPosition()));
+            Predicate<ChessMove> moveEndIsKing = move -> (move.getEndPosition().equals(king));
+            Predicate<ChessMove> intermed = move -> kingMoves.stream().noneMatch(kingMove -> compKing.test(kingMove, move));
+            Predicate<ChessMove> kingEndIsStart = move -> moveEndIsKing.test(move) && intermed.test(move);
 
             var res = posMoves.stream().anyMatch(kingEndIsStart);
             if (res) {
