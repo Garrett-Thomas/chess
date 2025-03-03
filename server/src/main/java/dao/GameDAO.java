@@ -14,6 +14,5 @@ public interface GameDAO {
 
     public void joinGame(String playerName, String playerColor, int gameID) throws ServiceException;
     void clear();
-
 }
 
