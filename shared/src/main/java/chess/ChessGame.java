@@ -165,7 +165,7 @@ public class ChessGame {
         for (ChessPosition pos : enemyPos) {
             Collection<ChessMove> posMoves = validMoves(pos);
 
-            boolean res = posMoves.stream().anyMatch(move -> (move.getEndPosition().equals(king)) && kingMoves.stream().noneMatch(kingMove -> kingMove.getEndPosition().equals(move.getStartPosition())));
+            var res = posMoves.stream().anyMatch(move -> (move.getEndPosition().equals(king)) && kingMoves.stream().noneMatch(kingMove -> kingMove.getEndPosition().equals(move.getStartPosition())));
             if (res) {
                 return true;
             }

@@ -66,8 +66,8 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
                 allMoves.add(toMove);
             }
 
-            for (int[] move : this.diagMoves[selector]) {
-                toMove = new ChessMove(pos, new ChessPosition(pos.getRow() + move[1], pos.getColumn() + move[0]), null);
+            for (int[] possibleMove : this.diagMoves[selector]) {
+                toMove = new ChessMove(pos, new ChessPosition(pos.getRow() + possibleMove[1], pos.getColumn() + possibleMove[0]), null);
                 if (PieceUtils.isValidMove(board, toMove) && PieceUtils.isTakeMove(board, toMove)) {
                     allMoves.add(toMove);
                 }

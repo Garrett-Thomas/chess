@@ -7,7 +7,7 @@ import spark.Request;
 import spark.Response;
 
 public class ServerUtils {
-   private static final AuthDAO authDAO = MemoryAuthDAO.getInstance();
+   private static final AuthDAO AUTH_DAO = MemoryAuthDAO.getInstance();
 
 
 
@@ -19,7 +19,7 @@ public class ServerUtils {
           throw new ServiceException(400, "Token does not exist");
       }
 
-     if(!authDAO.validateAuth(token)){
+     if(!AUTH_DAO.validateAuth(token)){
         throw new ServiceException(401, "Token not valid");
      }
 

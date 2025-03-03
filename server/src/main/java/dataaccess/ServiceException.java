@@ -8,14 +8,15 @@ public class ServiceException extends Exception {
     private final int statusCode;
     private final String message;
     private final boolean override;
-    private final static Map<Integer, String> codeToRes = Map.of(400, "Error: bad request", 401, "Error: unauthorized", 403, "Error: already taken");
+    private final static Map<Integer, String> CODE_TO_RES = Map.of(400, "Error: bad request", 401, "Error: unauthorized", 403, "Error: already taken");
 
-    public ServiceException(int statusCode, String message, boolean override){
+    public ServiceException(int statusCode, String message, boolean override) {
         super(message);
         this.message = message;
         this.statusCode = statusCode;
         this.override = override;
     }
+
     public ServiceException(int statusCode, String message) {
         super(message);
         this.message = message;
@@ -33,7 +34,7 @@ public class ServiceException extends Exception {
             return String.format("Error: %s", this.message);
         }
 
-        return codeToRes.get(this.statusCode);
+        return CODE_TO_RES.get(this.statusCode);
     }
 
 }
