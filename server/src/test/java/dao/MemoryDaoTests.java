@@ -1,20 +1,19 @@
 package dao;
 
-import chess.PieceUtils;
 import dataaccess.ServiceException;
 import model.UserData;
 import org.junit.jupiter.api.*;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class DaoTests {
+public class MemoryDaoTests {
     private final AuthDAO authDAO;
     private final UserDAO userDAO;
     private final GameDAO gameDAO;
     private final UserData john;
 
 
-    public DaoTests() {
+    public MemoryDaoTests() {
         this.authDAO = new MemoryAuthDAO();
         this.userDAO = new MemoryUserDAO();
         this.gameDAO = new MemoryGameDAO();

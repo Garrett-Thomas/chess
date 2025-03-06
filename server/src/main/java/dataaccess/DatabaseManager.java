@@ -9,6 +9,35 @@ public class DatabaseManager {
     private static final String PASSWORD;
     private static final String CONNECTION_URL;
 
+    private static final String[] tableStatements = {"""
+                        CREATE TABLE IF NOT EXISTS  auth (
+                          `id` int NOT NULL AUTO_INCREMENT,
+                          `username` varchar(256) NOT NULL,
+                          `token` varchar(256),
+                          PRIMARY KEY (`id`)
+                        )""",
+            """
+                   CREATE TABLE IF NOT EXISTS  user(
+                     `id` int NOT NULL AUTO_INCREMENT,
+                     `username` varchar(256) NOT NULL,
+                     `email` varchar(256) NOT NULL,
+                     `password` TEXT NOT NULL,
+                     PRIMARY KEY (`id`)
+                   )
+""",
+            """
+            CREATE TABLE IF NOT EXISTS  games(
+              `id` int NOT NULL AUTO_INCREMENT,
+              `gameID` int NOT NULL,
+              `gameName` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256),
+              `blackUsername` varchar(256),
+              `game` TEXT DEFAULT NULL,
+              PRIMARY KEY (`id`)
+            )"""
+
+    };
+
     /*
      * Load the database information for the db.properties file.
      */
@@ -31,6 +60,18 @@ public class DatabaseManager {
         } catch (Exception ex) {
             throw new RuntimeException("unable to process db.properties. " + ex.getMessage());
         }
+
+        try (var conn = getConnection()) {
+            for (var statement : tableStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Cannot create tables");
+        }
+
+
     }
 
     /**
@@ -60,7 +101,7 @@ public class DatabaseManager {
      * }
      * </code>
      */
-    static Connection getConnection() throws DataAccessException {
+    public static Connection getConnection() throws DataAccessException {
         try {
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
             conn.setCatalog(DATABASE_NAME);

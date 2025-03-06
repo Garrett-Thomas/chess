@@ -32,7 +32,7 @@ public class AuthHandler {
 
     }
 
-    public Object postRegister(Request req, spark.Response res) throws ServiceException {
+    public Object postRegister(Request req, spark.Response res) throws Exception {
 
         var registerReq = new Gson().fromJson(req.body(), UserData.class);
         var regResult = this.authService.register(registerReq);
@@ -40,7 +40,7 @@ public class AuthHandler {
 
     }
 
-    public Object postLogin(Request req, spark.Response res) throws ServiceException {
+    public Object postLogin(Request req, spark.Response res) throws Exception {
 
         var loginRequest = new Gson().fromJson(req.body(), RegisterRequest.LoginRequest.class);
 

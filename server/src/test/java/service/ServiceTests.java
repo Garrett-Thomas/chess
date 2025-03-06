@@ -21,13 +21,13 @@ public class ServiceTests {
         try {
             authService.register(req);
             authService.register(new UserData("one", "two", "three"));
-        } catch (ServiceException e) {
+        } catch (Exception e) {
             System.exit(1);
         }
     }
 
     @Test
-    public void testLoginPositive() {
+    public void testLoginPositive() throws Exception {
         try {
             authService.login(new RegisterRequest.LoginRequest("username", "pass"));
 
@@ -44,13 +44,13 @@ public class ServiceTests {
         try {
             authService.login(logReq);
             assert (false);
-        } catch (ServiceException ignored) {
+        } catch (Exception ignored) {
         }
 
     }
 
     @Test
-    public void testLogoutPositive() {
+    public void testLogoutPositive() throws Exception {
 
         try {
 
@@ -90,7 +90,7 @@ public class ServiceTests {
         try {
             authService.register(req);
 
-        } catch (ServiceException e) {
+        } catch (Exception e) {
             assert (false);
         }
 

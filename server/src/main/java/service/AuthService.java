@@ -27,7 +27,7 @@ public class AuthService {
 
     }
 
-    public LoginResponse register(UserData req) throws ServiceException {
+    public LoginResponse register(UserData req) throws Exception {
 
         var username = req.username();
         if (username == null || req.password() == null || req.email() == null) {
@@ -48,7 +48,7 @@ public class AuthService {
 
     }
 
-    public LoginResponse login(RegisterRequest.LoginRequest res) throws ServiceException {
+    public LoginResponse login(RegisterRequest.LoginRequest res) throws Exception {
 
         var userData = this.userDAO.getUser(res.username());
         if(userData == null){
