@@ -1,5 +1,6 @@
 package dataaccess;
 
+import javax.sql.rowset.CachedRowSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,22 +28,22 @@ public class DbUtils {
         return ps;
     }
 
-    public static ResultSet executeQuery(String statement, Object... params) throws ServiceException {
-        try (var conn = DatabaseManager.getConnection()) {
-            var ps = parseStatement(conn, statement, params);
-            ps.executeQuery();
+    public static ResultSet executeQuery(String statement, Object... params) throws ServiceException, SQLException {
 
-            var rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                return rs;
-            }
-
-
-            // This means that no data was fetched from the server in essence
-            return null;
-        } catch (SQLException | DataAccessException e) {
-            throw new ServiceException(500, String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        Connection conn;
+        try {
+            conn = DatabaseManager.getConnection();
+        } catch (DataAccessException e) {
+            throw new ServiceException(500, String.format("unable to query database: %s, %s", statement, e.getMessage()));
         }
+
+        var ps = parseStatement(conn, statement, params);
+        var res = ps.executeQuery();
+
+        if (res.next()) {
+            return res;
+        }
+        throw new ServiceException(500, "Query error " + statement);
     }
 
     public static int executeUpdate(String statement, Object... params) throws ServiceException {

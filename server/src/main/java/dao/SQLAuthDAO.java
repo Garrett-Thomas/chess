@@ -12,60 +12,74 @@ public class SQLAuthDAO implements AuthDAO {
 
     private static final String createAuthString =
             """
-           INSERT INTO auth (username, token) VALUES (?, ?)
-            """;
+                    INSERT INTO auth (username, token) VALUES (?, ?)
+                    """;
 
     private static final String getUserString =
             """
-            SELECT username FROM auth WHERE token = ? 
-            """;
+                    SELECT username FROM auth WHERE token = ? 
+                    """;
+    private static final String deleteTokenString =
+            """
+                    SET token = NULL WHERE token = ?
+                    """;
+
+    private static final String deleteTableString =
+            """
+                    TRUNCATE TABLE auth 
+                    """;
+
     SQLAuthDAO() {
     }
 
     @Override
     public boolean validateAuth(String token) {
-        return false;
+
+        try {
+            var res = DbUtils.executeQuery(getUserString, token);
+            return !res.getString("username").isEmpty();
+
+        } catch (Exception e) {
+            System.err.println(e.toString());
+            return false;
+        }
+
     }
 
     @Override
     public String getUsername(String token) {
 
-        try(var conn = DatabaseManager.getConnection()){
-
+        try {
             var res = DbUtils.executeQuery(getUserString, token);
-
             return res.getString("username");
-        }
-        catch(Exception e){
+
+        } catch (Exception e) {
             System.err.println(e.toString());
+            return null;
         }
 
-        return "";
     }
 
     @Override
-    public String createAuth(String username) throws Exception {
+    public String createAuth(String username) throws ServiceException {
 
         var token = UUID.randomUUID().toString();
-        try (var conn = DatabaseManager.getConnection()) {
-
-            DbUtils.executeUpdate(createAuthString, username, token);
-
-        }
-        catch (DataAccessException e) {
-            throw new ServiceException(500, "Server error");
-        }
-
+        DbUtils.executeUpdate(createAuthString, username, token);
         return token;
     }
 
     @Override
     public void deleteAuthToken(String token) throws ServiceException {
-
+        DbUtils.executeUpdate(deleteTokenString, token);
     }
 
     @Override
     public void clear() {
+        try {
 
+            DbUtils.executeUpdate(deleteTableString);
+        } catch (ServiceException e) {
+            System.err.println("Error deleting auth table: " + e.toString());
+        }
     }
 }

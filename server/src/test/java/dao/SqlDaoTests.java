@@ -8,13 +8,14 @@ import javax.xml.crypto.Data;
 
 public class SqlDaoTests {
     private static final AuthDAO sqlAuthDao = new SQLAuthDAO();
-
+    public static String token;
 
     SqlDaoTests() {
     }
 
     @BeforeAll
     public static void setup() throws Exception {
+        token = sqlAuthDao.createAuth("test");
     }
 
     @Test
@@ -31,6 +32,16 @@ public class SqlDaoTests {
 
         var res = sqlAuthDao.getUsername(token);
         assert (username.equals(res));
+    }
+
+    @Test
+    public void authUser(){
+        assert(sqlAuthDao.validateAuth(token));
+    }
+
+    @Test
+    public void authUserNegative(){
+        assert(!sqlAuthDao.validateAuth("hello"));
     }
 
 
