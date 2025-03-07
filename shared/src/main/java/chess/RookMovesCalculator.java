@@ -3,12 +3,15 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class RookMovesCalculator implements PieceMovesCalculator{
+public class RookMovesCalculator extends CalcType implements PieceMovesCalculator {
 
-   public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos){
+    RookMovesCalculator() {
+         super(RookMovesCalculator.class.getName());
+    }
+
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
         return PieceUtils.getCrossMoves(board, pos);
-   }
-
+    }
 
 
 }

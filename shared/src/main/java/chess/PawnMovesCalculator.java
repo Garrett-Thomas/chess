@@ -3,13 +3,14 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class PawnMovesCalculator implements PieceMovesCalculator {
+public class PawnMovesCalculator extends CalcType implements PieceMovesCalculator {
 
     private final int[][][] diagMoves;
     private final int[][] forwardMoves;
     private final int[][] startMoves;
 
     PawnMovesCalculator() {
+        super(PawnMovesCalculator.class.getName());
 
         // White first then black
         this.diagMoves = new int[][][]{{{1, 1}, {-1, 1}}, {{-1, -1}, {1, -1}}};

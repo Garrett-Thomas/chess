@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class KnightMovesCalculator implements PieceMovesCalculator {
+public class KnightMovesCalculator extends CalcType implements PieceMovesCalculator {
 
     private int[][] knightMoves;
 
     KnightMovesCalculator() {
+
+       super(KnightMovesCalculator.class.getName());
         this.knightMoves = new int[][]{{2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
     }
 

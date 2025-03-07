@@ -29,9 +29,6 @@ public class DatabaseManager {
             CREATE TABLE IF NOT EXISTS  games(
               `id` int NOT NULL AUTO_INCREMENT,
               `gameID` int NOT NULL,
-              `gameName` varchar(256) NOT NULL,
-              `whiteUsername` varchar(256),
-              `blackUsername` varchar(256),
               `game` TEXT DEFAULT NULL,
               PRIMARY KEY (`id`)
             )"""

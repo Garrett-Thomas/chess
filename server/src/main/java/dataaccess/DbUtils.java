@@ -49,12 +49,7 @@ public class DbUtils {
         }
 
         var ps = parseStatement(conn, statement, params);
-        var res = ps.executeQuery();
-
-        if (res.next()) {
-            return res;
-        }
-        throw new ServiceException(500, "Query error " + statement);
+        return ps.executeQuery();
     }
 
     public static int executeUpdate(String statement, Object... params) throws ServiceException {

@@ -16,7 +16,7 @@ public class MemoryDaoTests {
     public MemoryDaoTests() {
         this.authDAO = new MemoryAuthDAO();
         this.userDAO = new MemoryUserDAO();
-        this.gameDAO = new MemoryGameDAO();
+        this.gameDAO = new SQLGameDAO();
 
         this.john = new UserData("John Doe", "password123", "john@gmail.com");
 
@@ -156,7 +156,9 @@ public class MemoryDaoTests {
     @DisplayName("Test list games")
     public void listGames() {
         try {
-            this.gameDAO.getGames();
+            var res = this.gameDAO.getGames();
+            assert(!res.isEmpty());
+
         } catch (Exception e) {
             assert (false);
         }

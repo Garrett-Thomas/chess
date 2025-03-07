@@ -3,11 +3,12 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class KingMovesCalculator implements PieceMovesCalculator {
+public class KingMovesCalculator extends CalcType implements PieceMovesCalculator {
 
     private int[][] kingMoves;
 
     KingMovesCalculator() {
+        super(KingMovesCalculator.class.getName());
         this.kingMoves = new int[][]{{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}};
     }
 
