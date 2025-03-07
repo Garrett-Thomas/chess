@@ -8,6 +8,7 @@ import dataaccess.DbUtils;
 import dataaccess.ServiceException;
 import model.GameData;
 import utils.GameSerializer;
+import utils.GsonParent;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -31,14 +32,17 @@ public class SQLGameDAO implements GameDAO {
             UPDATE games SET game = ? WHERE gameID = ?
             """;
 
+    private static final String clearTableString = """
+            TRUNCATE TABLE games 
+            """;
+
+    private final Gson gson = GsonParent.getInstance();
+
     @Override
     public ArrayList<GameData> getGames() {
 
         ArrayList<GameData> res = new ArrayList<>();
         try {
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            gsonBuilder.registerTypeAdapter(PieceMovesCalculator.class, new GameSerializer<PieceMovesCalculator>());
-            var gson = gsonBuilder.create();
             var games = DbUtils.executeQuery(getGamesStrings);
 
             while (games.next()) {
@@ -60,13 +64,9 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public Integer createGame(String gameName) {
         Integer gameID = Math.abs(UUID.randomUUID().hashCode());
-        var game = new GameData(gameID, null, null, gameName, new ChessGame());
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(PieceMovesCalculator.class, new GameSerializer<PieceMovesCalculator>());
-        var gson = gsonBuilder.create();
 
+        var game = new GameData(gameID, null, null, gameName, new ChessGame());
         var gameJson = gson.toJson(game);
-        System.out.println(gameJson);
         try {
 
             DbUtils.executeUpdate(createGameString, gameID, gameJson);
@@ -86,7 +86,7 @@ public class SQLGameDAO implements GameDAO {
             var res = DbUtils.executeQuery(getGameByIdString, gameID);
 
             if (res.next()) {
-                game = new Gson().fromJson(res.getString("game"), GameData.class);
+                game = gson.fromJson(res.getString("game"), GameData.class);
             } else {
                 throw new ServiceException(400, "gameID does not exist");
             }
@@ -123,6 +123,11 @@ public class SQLGameDAO implements GameDAO {
 
     @Override
     public void clear() {
+        try {
 
+            DbUtils.executeUpdate(clearTableString);
+        } catch (ServiceException e) {
+            System.err.println(e.getMessage());
+        }
     }
 }
