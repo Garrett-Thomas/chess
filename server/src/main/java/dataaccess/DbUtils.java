@@ -1,5 +1,7 @@
 package dataaccess;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import javax.sql.rowset.CachedRowSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,6 +29,15 @@ public class DbUtils {
 
         return ps;
     }
+
+    public static boolean checkPassword(String userPassword, String hash) {
+        return BCrypt.checkpw(userPassword, hash);
+    }
+
+    public static String hashPassword(String password) {
+        return (BCrypt.hashpw(password, BCrypt.gensalt()));
+    }
+
 
     public static ResultSet executeQuery(String statement, Object... params) throws ServiceException, SQLException {
 

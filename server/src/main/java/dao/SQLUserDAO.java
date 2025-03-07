@@ -15,6 +15,10 @@ public class SQLUserDAO implements UserDAO {
             INSERT INTO user (username, password, email) VALUES (?, ?, ?)
             """;
 
+    private static final String clearTableString = """
+            TRUNCATE TABLE user
+            """;
+
     SQLUserDAO() {
     }
 
@@ -37,13 +41,20 @@ public class SQLUserDAO implements UserDAO {
     @Override
     public void addUser(UserData userData) throws ServiceException {
         var username = userData.username();
-        var password = userData.password();
+        var password = DbUtils.hashPassword(userData.password());
         var email = userData.email();
-        var res = DbUtils.executeUpdate(addUserString, username, password, email);
+        DbUtils.executeUpdate(addUserString, username, password, email);
     }
 
     @Override
     public void clear() {
+        try {
+            DbUtils.executeUpdate(clearTableString);
+
+        } catch (ServiceException e) {
+            System.err.println("ERROR: " + e.getMessage());
+
+        }
 
     }
 }

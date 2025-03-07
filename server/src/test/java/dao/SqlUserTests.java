@@ -3,17 +3,20 @@ package dao;
 import dataaccess.ServiceException;
 import model.UserData;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import java.sql.PreparedStatement;
+import java.util.Objects;
 
 public class SqlUserTests {
 
     private static SQLUserDAO sqlUserDAO = new SQLUserDAO();
     private static UserData garyData = new UserData("gary", "pass", "waters");
 
-    @BeforeAll
-    public static void init() {
+    @BeforeEach
+    public void init() {
         try {
 
             sqlUserDAO.addUser(garyData);
@@ -24,9 +27,19 @@ public class SqlUserTests {
 
 
     @Test
+    @Order(1)
     public void getUser() {
         var res = sqlUserDAO.getUser(garyData.username());
-        assert (res.equals(garyData));
+        assert (Objects.equals(res.username(), garyData.username()));
+    }
+
+    @Test
+    @Order(2)
+    public void testClear() {
+        sqlUserDAO.clear();
+
+        var res = sqlUserDAO.getUser(garyData.username());
+        assert (res == null);
     }
 
 }
