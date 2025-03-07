@@ -21,7 +21,7 @@ public class SQLAuthDAO implements AuthDAO {
                     """;
     private static final String deleteTokenString =
             """
-                    SET token = NULL WHERE token = ?
+                    UPDATE auth SET token = NULL WHERE token = ?
                     """;
 
     private static final String deleteTableString =

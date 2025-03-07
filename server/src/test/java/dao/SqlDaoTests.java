@@ -1,7 +1,9 @@
 package dao;
 
 import dataaccess.DatabaseManager;
+import dataaccess.ServiceException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.crypto.Data;
@@ -13,8 +15,8 @@ public class SqlDaoTests {
     SqlDaoTests() {
     }
 
-    @BeforeAll
-    public static void setup() throws Exception {
+    @BeforeEach
+    public void setup() throws Exception {
         token = sqlAuthDao.createAuth("test");
     }
 
@@ -44,5 +46,18 @@ public class SqlDaoTests {
         assert(!sqlAuthDao.validateAuth("hello"));
     }
 
+    @Test
+    public void deleteToken() throws ServiceException {
+        sqlAuthDao.deleteAuthToken(token);
+
+        assert(!sqlAuthDao.validateAuth(token));
+
+    }
+
+    @Test
+    public void testClear(){
+        sqlAuthDao.clear();
+        assert(sqlAuthDao.getUsername(token) == null);
+    }
 
 }
