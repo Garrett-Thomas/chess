@@ -11,8 +11,6 @@ public class SQLAuthDAO implements AuthDAO {
     private static final String createAuthString =
             """
                     INSERT INTO auth (username, token) VALUES (?, ?)
-                    ON DUPLICATE KEY UPDATE
-                    token = ?
                     """;
 
     private static final String getUserString =
@@ -74,7 +72,7 @@ public class SQLAuthDAO implements AuthDAO {
     public String createAuth(String username) throws ServiceException {
 
         var token = UUID.randomUUID().toString();
-        DbUtils.executeUpdate(createAuthString, username, token, token);
+        DbUtils.executeUpdate(createAuthString, username, token);
         return token;
     }
 

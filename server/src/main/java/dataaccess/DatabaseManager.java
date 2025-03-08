@@ -12,7 +12,7 @@ public class DatabaseManager {
     private static final String[] tableStatements = {"""
                         CREATE TABLE IF NOT EXISTS  auth (
                           `id` int NOT NULL AUTO_INCREMENT,
-                          `username` varchar(256) NOT NULL UNIQUE,
+                          `username` varchar(256) NOT NULL ,
                           `token` varchar(256),
                           PRIMARY KEY (`id`)
                         )""",
