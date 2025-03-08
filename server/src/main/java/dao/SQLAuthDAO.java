@@ -17,7 +17,7 @@ public class SQLAuthDAO implements AuthDAO {
             """
                     SELECT username FROM auth WHERE token = ? 
                     """;
-    private static final String deleteTokenString =
+    private static final String DELETE_TOKEN_STRING =
             """
                     UPDATE auth SET token = NULL WHERE token = ?
                     """;
@@ -78,7 +78,7 @@ public class SQLAuthDAO implements AuthDAO {
 
     @Override
     public void deleteAuthToken(String token) throws ServiceException {
-        DbUtils.executeUpdate(deleteTokenString, token);
+        DbUtils.executeUpdate(DELETE_TOKEN_STRING, token);
     }
 
     @Override
