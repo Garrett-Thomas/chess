@@ -29,7 +29,7 @@ public class SQLGameDAO implements GameDAO {
             UPDATE games SET game = ? WHERE gameID = ?
             """;
 
-    private static final String clearTableString = """
+    private static final String CLEAR_TABLE_STRING = """
             TRUNCATE TABLE games 
             """;
 
@@ -132,7 +132,7 @@ public class SQLGameDAO implements GameDAO {
     public void clear() {
         try {
 
-            DbUtils.executeUpdate(clearTableString);
+            DbUtils.executeUpdate(CLEAR_TABLE_STRING);
         } catch (ServiceException e) {
             System.err.println(e.getMessage());
         }

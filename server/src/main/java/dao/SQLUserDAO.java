@@ -8,14 +8,14 @@ import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO {
 
-    private static final String getUserString = """
+    private static final String GET_USER_STRING = """
             SELECT * FROM user WHERE username = ?
             """;
-    private static final String addUserString = """
+    private static final String ADD_USER_STRING = """
             INSERT INTO user (username, password, email) VALUES (?, ?, ?)
             """;
 
-    private static final String clearTableString = """
+    private static final String CLEAR_TABLE_STRING = """
             TRUNCATE TABLE user
             """;
 
@@ -38,7 +38,7 @@ public class SQLUserDAO implements UserDAO {
 
 
         try {
-            var res = DbUtils.executeQuery(getUserString, username);
+            var res = DbUtils.executeQuery(GET_USER_STRING, username);
 
             if(res.next()){
                 return new UserData(username, res.getString("password"), res.getString("email"));
@@ -56,13 +56,13 @@ public class SQLUserDAO implements UserDAO {
         var username = userData.username();
         var password = DbUtils.hashPassword(userData.password());
         var email = userData.email();
-        DbUtils.executeUpdate(addUserString, username, password, email);
+        DbUtils.executeUpdate(ADD_USER_STRING, username, password, email);
     }
 
     @Override
     public void clear() {
         try {
-            DbUtils.executeUpdate(clearTableString);
+            DbUtils.executeUpdate(CLEAR_TABLE_STRING);
 
         } catch (ServiceException e) {
             System.err.println("ERROR: " + e.getMessage());
