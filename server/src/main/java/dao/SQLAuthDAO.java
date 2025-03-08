@@ -8,12 +8,12 @@ import java.util.UUID;
 
 public class SQLAuthDAO implements AuthDAO {
 
-    private static final String createAuthString =
+    private static final String CREATE_AUTH_STRING =
             """
                     INSERT INTO auth (username, token) VALUES (?, ?)
                     """;
 
-    private static final String getUserString =
+    private static final String GET_USER_STRING =
             """
                     SELECT username FROM auth WHERE token = ? 
                     """;
@@ -39,7 +39,7 @@ public class SQLAuthDAO implements AuthDAO {
     public boolean validateAuth(String token) {
 
         try {
-            var res = DbUtils.executeQuery(getUserString, token);
+            var res = DbUtils.executeQuery(GET_USER_STRING, token);
             if (res.next()) {
 
                 return !res.getString("username").isEmpty();
@@ -56,7 +56,7 @@ public class SQLAuthDAO implements AuthDAO {
     public String getUsername(String token) {
 
         try {
-            var res = DbUtils.executeQuery(getUserString, token);
+            var res = DbUtils.executeQuery(GET_USER_STRING, token);
             if (res.next()) {
                 return res.getString("username");
             }
@@ -72,7 +72,7 @@ public class SQLAuthDAO implements AuthDAO {
     public String createAuth(String username) throws ServiceException {
 
         var token = UUID.randomUUID().toString();
-        DbUtils.executeUpdate(createAuthString, username, token);
+        DbUtils.executeUpdate(CREATE_AUTH_STRING, username, token);
         return token;
     }
 

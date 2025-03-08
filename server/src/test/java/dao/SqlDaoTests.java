@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import javax.xml.crypto.Data;
 
 public class SqlDaoTests {
-    private static final AuthDAO sqlAuthDao = new SQLAuthDAO();
+    private static final AuthDAO SQL_AUTH_DAO = new SQLAuthDAO();
     public static String token;
 
     SqlDaoTests() {
@@ -17,12 +17,12 @@ public class SqlDaoTests {
 
     @BeforeEach
     public void setup() throws Exception {
-        token = sqlAuthDao.createAuth("test");
+        token = SQL_AUTH_DAO.createAuth("test");
     }
 
     @Test
     public void getAuth() throws Exception {
-        var res = sqlAuthDao.createAuth("Gary");
+        var res = SQL_AUTH_DAO.createAuth("Gary");
         assert (!res.isEmpty());
 
     }
@@ -30,34 +30,34 @@ public class SqlDaoTests {
     @Test
     public void getUser() throws Exception {
         var username = "waters";
-        var token = sqlAuthDao.createAuth(username);
+        var token = SQL_AUTH_DAO.createAuth(username);
 
-        var res = sqlAuthDao.getUsername(token);
+        var res = SQL_AUTH_DAO.getUsername(token);
         assert (username.equals(res));
     }
 
     @Test
     public void authUser(){
-        assert(sqlAuthDao.validateAuth(token));
+        assert(SQL_AUTH_DAO.validateAuth(token));
     }
 
     @Test
     public void authUserNegative(){
-        assert(!sqlAuthDao.validateAuth("hello"));
+        assert(!SQL_AUTH_DAO.validateAuth("hello"));
     }
 
     @Test
     public void deleteToken() throws ServiceException {
-        sqlAuthDao.deleteAuthToken(token);
+        SQL_AUTH_DAO.deleteAuthToken(token);
 
-        assert(!sqlAuthDao.validateAuth(token));
+        assert(!SQL_AUTH_DAO.validateAuth(token));
 
     }
 
     @Test
     public void testClear(){
-        sqlAuthDao.clear();
-        assert(sqlAuthDao.getUsername(token) == null);
+        SQL_AUTH_DAO.clear();
+        assert(SQL_AUTH_DAO.getUsername(token) == null);
     }
 
 }
