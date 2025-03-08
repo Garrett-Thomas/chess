@@ -1,9 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import dao.MemoryAuthDAO;
-import dao.MemoryGameDAO;
-import dao.MemoryUserDAO;
+import dao.*;
 import dataaccess.ServiceException;
 import model.ResponseSuper;
 import spark.*;
@@ -45,9 +43,9 @@ public class Server {
         Spark.get("/game", this.gameHandler::listGames);
         Spark.post("/game", this.gameHandler::createGame);
         Spark.delete("/db", (Request req, Response res) -> {
-            MemoryUserDAO.getInstance().clear();
-            MemoryGameDAO.getInstance().clear();
-            MemoryAuthDAO.getInstance().clear();
+            SQLAuthDAO.getInstance().clear();
+            SQLGameDAO.getInstance().clear();
+            SQLUserDAO.getInstance().clear();
             return new Gson().toJson(null);
         });
 

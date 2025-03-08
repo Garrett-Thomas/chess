@@ -30,6 +30,5 @@ public class GameService {
     public void joinGame(GamesRequest gamesRequest, String playerName) throws Exception {
 
         this.gameDAO.joinGame(playerName, gamesRequest.playerColor(), gamesRequest.gameID());
-        new GamesResult(null, null);
     }
 }

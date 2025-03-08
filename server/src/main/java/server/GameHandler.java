@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dao.MemoryAuthDAO;
+import dao.SQLAuthDAO;
 import dataaccess.ServiceException;
 import model.GamesRequest;
 import model.GamesResult;
@@ -48,7 +49,7 @@ public class GameHandler {
         }
         String token = req.headers("authorization");
 
-        String username = MemoryAuthDAO.getInstance().getUsername(token);
+        String username = SQLAuthDAO.getInstance().getUsername(token);
 
 
         this.gameService.joinGame(gameReq, username);
