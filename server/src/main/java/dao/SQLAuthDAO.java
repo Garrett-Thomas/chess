@@ -22,7 +22,7 @@ public class SQLAuthDAO implements AuthDAO {
                     UPDATE auth SET token = NULL WHERE token = ?
                     """;
 
-    private static final String deleteTableString =
+    private static final String DELETE_TABLE_STRING =
             """
                     TRUNCATE TABLE auth 
                     """;
@@ -85,7 +85,7 @@ public class SQLAuthDAO implements AuthDAO {
     public void clear() {
         try {
 
-            DbUtils.executeUpdate(deleteTableString);
+            DbUtils.executeUpdate(DELETE_TABLE_STRING);
         } catch (ServiceException e) {
             System.err.println("Error deleting auth table: " + e.toString());
         }

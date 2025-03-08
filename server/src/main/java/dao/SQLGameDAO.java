@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class SQLGameDAO implements GameDAO {
 
-    private static final String getGamesStrings = """
+    private static final String GET_GAMES_STRINGS = """
             SELECT * FROM games;
             """;
     private static final String createGameString = """
@@ -50,7 +50,7 @@ public class SQLGameDAO implements GameDAO {
 
         ArrayList<GameData> res = new ArrayList<>();
         try {
-            var games = DbUtils.executeQuery(getGamesStrings);
+            var games = DbUtils.executeQuery(GET_GAMES_STRINGS);
 
             while (games.next()) {
                 var gameJson = games.getString("game");
