@@ -17,15 +17,15 @@ public class SQLGameDAO implements GameDAO {
     private static final String GET_GAMES_STRINGS = """
             SELECT * FROM games;
             """;
-    private static final String createGameString = """
+    private static final String CREATE_GAME_STRING = """
                 INSERT INTO games (gameID, game) VALUES (?,?) 
             """;
 
-    private static final String getGameByIdString = """
+    private static final String GET_GAME_BY_ID_STRING = """
             SELECT * FROM games WHERE gameID = ? LIMIT 1
             """;
 
-    private static final String updateGameString = """
+    private static final String UPDATE_GAME_STRING = """
             UPDATE games SET game = ? WHERE gameID = ?
             """;
 
@@ -76,7 +76,7 @@ public class SQLGameDAO implements GameDAO {
         var gameJson = gson.toJson(game);
         try {
 
-            DbUtils.executeUpdate(createGameString, gameID, gameJson);
+            DbUtils.executeUpdate(CREATE_GAME_STRING, gameID, gameJson);
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -90,7 +90,7 @@ public class SQLGameDAO implements GameDAO {
         GameData game;
         try {
 
-            var res = DbUtils.executeQuery(getGameByIdString, gameID);
+            var res = DbUtils.executeQuery(GET_GAME_BY_ID_STRING, gameID);
 
             if (res.next()) {
                 game = gson.fromJson(res.getString("game"), GameData.class);
@@ -124,7 +124,7 @@ public class SQLGameDAO implements GameDAO {
         }
 
         var gameJson = new Gson().toJson(updatedGame);
-        DbUtils.executeUpdate(updateGameString, gameJson, gameID);
+        DbUtils.executeUpdate(UPDATE_GAME_STRING, gameJson, gameID);
     }
 
 
