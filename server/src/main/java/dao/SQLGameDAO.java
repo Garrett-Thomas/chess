@@ -1,13 +1,10 @@
 package dao;
 
 import chess.ChessGame;
-import chess.PieceMovesCalculator;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import dataaccess.DbUtils;
 import dataaccess.ServiceException;
 import model.GameData;
-import utils.GameSerializer;
 import utils.GsonParent;
 
 import java.sql.SQLException;
@@ -37,6 +34,16 @@ public class SQLGameDAO implements GameDAO {
             """;
 
     private final Gson gson = GsonParent.getInstance();
+    private static SQLGameDAO sqlGameDAO = null;
+
+
+    public static SQLGameDAO getInstance() {
+        if (sqlGameDAO == null) {
+            sqlGameDAO = new SQLGameDAO();
+        }
+        return sqlGameDAO;
+    }
+
 
     @Override
     public ArrayList<GameData> getGames() {

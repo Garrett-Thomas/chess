@@ -1,9 +1,7 @@
 package service;
 
-import dao.AuthDAO;
-import dao.MemoryAuthDAO;
-import dao.MemoryUserDAO;
-import dao.UserDAO;
+import dao.*;
+import dataaccess.DbUtils;
 import dataaccess.ServiceException;
 import model.LoginResponse;
 import model.LogoutRequest;
@@ -18,8 +16,8 @@ public class AuthService {
     private final UserDAO userDAO;
 
     public AuthService() {
-        this.authDAO = MemoryAuthDAO.getInstance();
-        this.userDAO = MemoryUserDAO.getInstance();
+        this.authDAO = SQLAuthDAO.getInstance();
+        this.userDAO = SQLUserDAO.getInstance();
     }
 
     public void logout(LogoutRequest logoutReq) throws ServiceException {
@@ -51,10 +49,10 @@ public class AuthService {
     public LoginResponse login(RegisterRequest.LoginRequest res) throws Exception {
 
         var userData = this.userDAO.getUser(res.username());
-        if(userData == null){
+        if (userData == null) {
             throw new ServiceException(401, "User does not exist");
         }
-        if (!Objects.equals(userData.password(), res.password())) {
+        if (!DbUtils.checkPassword(res.password(), userData.password())) {
             throw new ServiceException(401, "Invalid password");
         }
 

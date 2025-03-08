@@ -2,12 +2,13 @@ package server;
 
 import dao.AuthDAO;
 import dao.MemoryAuthDAO;
+import dao.SQLAuthDAO;
 import dataaccess.ServiceException;
 import spark.Request;
 import spark.Response;
 
 public class ServerUtils {
-   private static final AuthDAO AUTH_DAO = MemoryAuthDAO.getInstance();
+   private static final AuthDAO AUTH_DAO = SQLAuthDAO.getInstance();
 
 
 

@@ -1,5 +1,6 @@
 package service;
 
+import dao.SQLGameDAO;
 import model.GamesRequest;
 import model.GamesResult;
 import dao.GameDAO;
@@ -10,7 +11,7 @@ public class GameService {
     private final GameDAO gameDAO;
 
     public GameService() {
-        this.gameDAO = MemoryGameDAO.getInstance();
+        this.gameDAO = SQLGameDAO.getInstance();
     }
 
 

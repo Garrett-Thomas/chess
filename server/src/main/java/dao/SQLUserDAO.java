@@ -19,6 +19,16 @@ public class SQLUserDAO implements UserDAO {
             TRUNCATE TABLE user
             """;
 
+    private static SQLUserDAO sqlUserDAO = null;
+
+
+    public static SQLUserDAO getInstance() {
+        if (sqlUserDAO == null) {
+            sqlUserDAO = new SQLUserDAO();
+        }
+        return sqlUserDAO;
+    }
+
     SQLUserDAO() {
     }
 
@@ -29,10 +39,13 @@ public class SQLUserDAO implements UserDAO {
 
         try {
             var res = DbUtils.executeQuery(getUserString, username);
-            return new UserData(username, res.getString("password"), res.getString("email"));
+
+            if(res.next()){
+                return new UserData(username, res.getString("password"), res.getString("email"));
+            }
+            throw new ServiceException(500, "could not get user");
 
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
             return null;
         }
 

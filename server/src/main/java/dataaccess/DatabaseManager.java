@@ -12,14 +12,14 @@ public class DatabaseManager {
     private static final String[] tableStatements = {"""
                         CREATE TABLE IF NOT EXISTS  auth (
                           `id` int NOT NULL AUTO_INCREMENT,
-                          `username` varchar(256) NOT NULL,
+                          `username` varchar(256) NOT NULL UNIQUE,
                           `token` varchar(256),
                           PRIMARY KEY (`id`)
                         )""",
             """
                    CREATE TABLE IF NOT EXISTS  user(
                      `id` int NOT NULL AUTO_INCREMENT,
-                     `username` varchar(256) NOT NULL,
+                     `username` varchar(256) NOT NULL UNIQUE,
                      `email` varchar(256) NOT NULL,
                      `password` TEXT NOT NULL,
                      PRIMARY KEY (`id`)
@@ -28,7 +28,7 @@ public class DatabaseManager {
             """
             CREATE TABLE IF NOT EXISTS  games(
               `id` int NOT NULL AUTO_INCREMENT,
-              `gameID` int NOT NULL,
+              `gameID` int NOT NULL UNIQUE,
               `game` TEXT DEFAULT NULL,
               PRIMARY KEY (`id`)
             )"""
@@ -53,6 +53,7 @@ public class DatabaseManager {
                 var host = props.getProperty("db.host");
                 var port = Integer.parseInt(props.getProperty("db.port"));
                 CONNECTION_URL = String.format("jdbc:mysql://%s:%d", host, port);
+                createDatabase();
             }
         } catch (Exception ex) {
             throw new RuntimeException("unable to process db.properties. " + ex.getMessage());

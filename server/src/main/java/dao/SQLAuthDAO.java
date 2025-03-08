@@ -1,11 +1,9 @@
 package dao;
 
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
+
 import dataaccess.DbUtils;
 import dataaccess.ServiceException;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 public class SQLAuthDAO implements AuthDAO {
@@ -13,6 +11,8 @@ public class SQLAuthDAO implements AuthDAO {
     private static final String createAuthString =
             """
                     INSERT INTO auth (username, token) VALUES (?, ?)
+                    ON DUPLICATE KEY UPDATE
+                    token = ?
                     """;
 
     private static final String getUserString =
@@ -28,8 +28,13 @@ public class SQLAuthDAO implements AuthDAO {
             """
                     TRUNCATE TABLE auth 
                     """;
+    private static SQLAuthDAO sqlAuthDAO = null;
 
-    SQLAuthDAO() {
+    public static SQLAuthDAO getInstance() {
+        if (sqlAuthDAO == null) {
+            sqlAuthDAO = new SQLAuthDAO();
+        }
+        return sqlAuthDAO;
     }
 
     @Override
@@ -37,10 +42,13 @@ public class SQLAuthDAO implements AuthDAO {
 
         try {
             var res = DbUtils.executeQuery(getUserString, token);
-            return !res.getString("username").isEmpty();
+            if (res.next()) {
+
+                return !res.getString("username").isEmpty();
+            }
+            throw new ServiceException(500, "Error validating auth");
 
         } catch (Exception e) {
-            System.err.println(e.toString());
             return false;
         }
 
@@ -51,10 +59,12 @@ public class SQLAuthDAO implements AuthDAO {
 
         try {
             var res = DbUtils.executeQuery(getUserString, token);
-            return res.getString("username");
+            if (res.next()) {
+                return res.getString("username");
+            }
+            throw new ServiceException(500, "Couldn't retrieve userdata");
 
         } catch (Exception e) {
-            System.err.println(e.toString());
             return null;
         }
 
@@ -64,7 +74,7 @@ public class SQLAuthDAO implements AuthDAO {
     public String createAuth(String username) throws ServiceException {
 
         var token = UUID.randomUUID().toString();
-        DbUtils.executeUpdate(createAuthString, username, token);
+        DbUtils.executeUpdate(createAuthString, username, token, token);
         return token;
     }
 
