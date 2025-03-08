@@ -9,7 +9,7 @@ public class DatabaseManager {
     private static final String PASSWORD;
     private static final String CONNECTION_URL;
 
-    private static final String[] tableStatements = {"""
+    private static final String[] TABLE_STATEMENTS = {"""
                         CREATE TABLE IF NOT EXISTS  auth (
                           `id` int NOT NULL AUTO_INCREMENT,
                           `username` varchar(256) NOT NULL ,
@@ -60,7 +60,7 @@ public class DatabaseManager {
         }
 
         try (var conn = getConnection()) {
-            for (var statement : tableStatements) {
+            for (var statement : TABLE_STATEMENTS) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
