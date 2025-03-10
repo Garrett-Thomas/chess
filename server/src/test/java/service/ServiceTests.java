@@ -1,5 +1,6 @@
 package service;
 
+import dao.SQLAuthDAO;
 import dataaccess.DbUtils;
 import dataaccess.ServiceException;
 import model.GamesRequest;
@@ -68,7 +69,13 @@ public class ServiceTests {
     @Test
     public void testLogoutNegative() {
         try {
-            authService.logout(new LogoutRequest(""));
+            var logoutReq = new LogoutRequest("");
+
+            if(!SQLAuthDAO.getInstance().validateAuth(logoutReq.authToken())){
+                throw new ServiceException(401, "no");
+            }
+
+            authService.logout(logoutReq);
             assert (false);
         } catch (ServiceException e) {
             assert (true);
