@@ -1,6 +1,6 @@
-package dao;
+package dataaccess;
 
-import dataaccess.ServiceException;
+import dataaccessclasses.ServiceException;
 import model.UserData;
 import org.junit.jupiter.api.*;
 

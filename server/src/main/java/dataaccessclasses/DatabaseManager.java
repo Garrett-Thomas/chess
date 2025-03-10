@@ -1,4 +1,4 @@
-package dataaccess;
+package dataaccessclasses;
 
 import java.sql.*;
 import java.util.Properties;

@@ -1,11 +1,10 @@
-package dataaccess;
+package dataaccessclasses;
 
 import dao.SQLAuthDAO;
 import dao.SQLGameDAO;
 import dao.SQLUserDAO;
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.sql.rowset.CachedRowSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

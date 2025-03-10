@@ -1,12 +1,10 @@
-package dao;
+package dataaccess;
 
-import dataaccess.DatabaseManager;
-import dataaccess.ServiceException;
-import org.junit.jupiter.api.BeforeAll;
+import dao.AuthDAO;
+import dao.SQLAuthDAO;
+import dataaccessclasses.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import javax.xml.crypto.Data;
 
 public class SqlDaoTests {
     private static final AuthDAO SQL_AUTH_DAO = new SQLAuthDAO();

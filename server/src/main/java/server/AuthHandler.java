@@ -1,7 +1,7 @@
 package server;
 
-import dataaccess.DataAccessException;
-import dataaccess.ServiceException;
+import dataaccessclasses.DataAccessException;
+import dataaccessclasses.ServiceException;
 import model.LoginResponse;
 import model.LogoutRequest;
 import model.RegisterRequest;

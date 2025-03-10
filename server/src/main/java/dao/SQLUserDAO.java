@@ -1,10 +1,8 @@
 package dao;
 
-import dataaccess.DbUtils;
-import dataaccess.ServiceException;
+import dataaccessclasses.DbUtils;
+import dataaccessclasses.ServiceException;
 import model.UserData;
-
-import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO {
 

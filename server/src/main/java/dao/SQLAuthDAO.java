@@ -1,8 +1,8 @@
 package dao;
 
 
-import dataaccess.DbUtils;
-import dataaccess.ServiceException;
+import dataaccessclasses.DbUtils;
+import dataaccessclasses.ServiceException;
 
 import java.util.UUID;
 
