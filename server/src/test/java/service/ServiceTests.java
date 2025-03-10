@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DbUtils;
 import dataaccess.ServiceException;
 import model.GamesRequest;
 import model.LogoutRequest;
@@ -19,6 +20,7 @@ public class ServiceTests {
     public static void init() {
         UserData req = new UserData("username", "pass", "user@gmail.com");
         try {
+            DbUtils.clearDB();
             authService.register(req);
             authService.register(new UserData("one", "two", "three"));
         } catch (Exception e) {

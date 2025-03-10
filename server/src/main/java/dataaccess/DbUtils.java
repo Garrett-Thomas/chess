@@ -1,5 +1,8 @@
 package dataaccess;
 
+import dao.SQLAuthDAO;
+import dao.SQLGameDAO;
+import dao.SQLUserDAO;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.sql.rowset.CachedRowSet;
@@ -51,7 +54,11 @@ public class DbUtils {
         var ps = parseStatement(conn, statement, params);
         return ps.executeQuery();
     }
-
+    public static void clearDB(){
+        SQLAuthDAO.getInstance().clear();
+        SQLGameDAO.getInstance().clear();
+        SQLUserDAO.getInstance().clear();
+    }
     public static int executeUpdate(String statement, Object... params) throws ServiceException {
         try (var conn = DatabaseManager.getConnection()) {
 
