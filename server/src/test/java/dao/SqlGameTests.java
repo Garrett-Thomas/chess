@@ -16,9 +16,23 @@ public class SqlGameTests {
     }
 
     @Test
-    public void testList(){
+    public void testListGames(){
         var res = SQL_GAME_DAO.getGames();
         assert(!res.isEmpty());
+    }
+    @Test
+    public void testCreateGame(){
+
+        var id = SQL_GAME_DAO.createGame("new_game");
+        assert(id > 0);
+    }
+    @Test
+    public void negativeCreateGame(){
+       var firstId = SQL_GAME_DAO.createGame("another_game");
+
+        var secondId = SQL_GAME_DAO.createGame("another_game");
+
+        assert(!firstId.equals(secondId));
     }
 
 }
