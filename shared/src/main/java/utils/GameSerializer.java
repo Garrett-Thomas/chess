@@ -11,8 +11,7 @@ public class GameSerializer<T> implements JsonSerializer<T>, JsonDeserializer<T>
     @Override
     public JsonElement serialize(T t, Type type, JsonSerializationContext jsonSerializationContext) {
         var className = t.getClass();
-        var res = jsonSerializationContext.serialize(t, className);
-        return res;
+        return jsonSerializationContext.serialize(t, className);
     }
 
 
@@ -24,7 +23,5 @@ public class GameSerializer<T> implements JsonSerializer<T>, JsonDeserializer<T>
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-//        jsonDeserializationContext.deserialize(jsonElement, Class.forName(jsonElement.getAsString()))
-
     }
 }
