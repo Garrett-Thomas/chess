@@ -1,6 +1,6 @@
 package dao;
 
-import dataaccessclasses.ServiceException;
+import dataaccess.ServiceException;
 import model.UserData;
 
 public interface UserDAO {

@@ -1,6 +1,7 @@
 package dataaccess;
 
-import dataaccessclasses.ServiceException;
+import dao.*;
+import dataaccess.ServiceException;
 import model.UserData;
 import org.junit.jupiter.api.*;
 
@@ -11,7 +12,6 @@ public class MemoryDaoTests {
     private final UserDAO userDAO;
     private final GameDAO gameDAO;
     private final UserData john;
-
 
     public MemoryDaoTests() {
         this.authDAO = new MemoryAuthDAO();

@@ -2,7 +2,9 @@ package dataaccess;
 
 import dao.AuthDAO;
 import dao.SQLAuthDAO;
-import dataaccessclasses.ServiceException;
+import dataaccess.DatabaseManager;
+import dataaccess.ServiceException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

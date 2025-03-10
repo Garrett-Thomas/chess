@@ -1,8 +1,9 @@
 package server;
 
 import dao.AuthDAO;
+import dao.MemoryAuthDAO;
 import dao.SQLAuthDAO;
-import dataaccessclasses.ServiceException;
+import dataaccess.ServiceException;
 import spark.Request;
 import spark.Response;
 

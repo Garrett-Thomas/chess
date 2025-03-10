@@ -1,12 +1,14 @@
 package service;
 
 import dao.*;
-import dataaccessclasses.DbUtils;
-import dataaccessclasses.ServiceException;
+import dataaccess.DbUtils;
+import dataaccess.ServiceException;
 import model.LoginResponse;
 import model.LogoutRequest;
 import model.RegisterRequest;
 import model.UserData;
+
+import java.util.Objects;
 
 public class AuthService {
 

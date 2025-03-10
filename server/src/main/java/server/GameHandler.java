@@ -1,8 +1,9 @@
 package server;
 
 import com.google.gson.Gson;
+import dao.MemoryAuthDAO;
 import dao.SQLAuthDAO;
-import dataaccessclasses.ServiceException;
+import dataaccess.ServiceException;
 import model.GamesRequest;
 import model.GamesResult;
 import service.GameService;

@@ -2,8 +2,8 @@ package dao;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataaccessclasses.DbUtils;
-import dataaccessclasses.ServiceException;
+import dataaccess.DbUtils;
+import dataaccess.ServiceException;
 import model.GameData;
 import utils.GsonParent;
 

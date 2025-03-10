@@ -1,6 +1,9 @@
 package dao;
 
-import dataaccessclasses.ServiceException;
+import dataaccess.DataAccessException;
+import dataaccess.ServiceException;
+
+import java.sql.SQLException;
 
 public interface AuthDAO {
 

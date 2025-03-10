@@ -1,5 +1,6 @@
 package dataaccess;
 
+import dao.SQLGameDAO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

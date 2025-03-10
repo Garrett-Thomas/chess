@@ -1,11 +1,13 @@
 package dataaccess;
 
-import dataaccessclasses.ServiceException;
+import dataaccess.ServiceException;
 import model.UserData;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-
+import dao.*;
+import java.sql.PreparedStatement;
 import java.util.Objects;
 
 public class SqlUserTests {

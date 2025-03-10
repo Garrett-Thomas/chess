@@ -1,8 +1,8 @@
 package service;
 
 import dao.SQLAuthDAO;
-import dataaccessclasses.DbUtils;
-import dataaccessclasses.ServiceException;
+import dataaccess.DbUtils;
+import dataaccess.ServiceException;
 import model.GamesRequest;
 import model.LogoutRequest;
 import model.RegisterRequest;
