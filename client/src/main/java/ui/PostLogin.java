@@ -3,6 +3,7 @@ package ui;
 import chess.ChessGame;
 import passoff.model.TestCreateRequest;
 import passoff.model.TestJoinRequest;
+import server.ChessClient;
 import server.ServerFacade;
 
 import java.util.ArrayList;
@@ -42,7 +43,11 @@ public class PostLogin {
             throw new UIException(res.getMessage());
         }
 
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully create a game with the name " + params.getFirst());
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully create a game with the name " + params.getFirst() + EscapeSequences.RESET_TEXT_COLOR);
+    }
+
+    private static String formatRow(String num, String name, String whiteName, String blackName) {
+        return String.format("%-8s %-20s %-20s %-20s", num, name, whiteName, blackName);
     }
 
     private static void listGames() throws Exception {
@@ -50,19 +55,22 @@ public class PostLogin {
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
+
         HashMap<String, Integer> numToID = new HashMap<>();
         var games = res.getGames();
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(formatRow("Number", "Game Name", "White Player", "Black Player"));
+        stringBuilder.append("\n");
+
         for (int i = 0; i < games.length; i++) {
-            stringBuilder.append(i);
-            stringBuilder.append(" ");
-            stringBuilder.append(games[i].getGameID());
+            var row = formatRow(i + "", games[i].getGameName(), games[i].getWhiteUsername(), games[i].getBlackUsername());
+            stringBuilder.append(row);
             stringBuilder.append("\n");
             numToID.put(i + "", games[i].getGameID());
         }
 
         LocalStorage.setGameMap(numToID);
-        System.out.println(stringBuilder.toString());
+        System.out.println(stringBuilder);
     }
 
     private static void playGame(ArrayList<String> params) throws Exception {
@@ -87,7 +95,8 @@ public class PostLogin {
 
         LocalStorage.setCurrGameID(gameID);
 
-        System.out.println("Successfully join game");
+        System.out.println("Successfully joined game");
+        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
 
     }
 
@@ -95,12 +104,14 @@ public class PostLogin {
 
         var gameID = LocalStorage.getGame(params.getFirst());
         System.out.println("Observing game with ID: " + gameID);
+        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
     }
 
     private static String help() {
         return ("""
                 help -> display this message
                 logout -> logout current user
+                create <GAME_NAME> -> create a game with the given name
                 join <ID> [WHITE|BLACK] -> join game with given id and as given color
                 observe <ID> -> observe game with given id
                 quit -> quit program 

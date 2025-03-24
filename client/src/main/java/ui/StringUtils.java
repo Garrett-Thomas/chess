@@ -24,5 +24,11 @@ public class StringUtils {
         return new ArrayList<String>(input.subList(1, input.size()));
     }
 
+    public static String getPositiveString(String msg){
+        return EscapeSequences.SET_TEXT_COLOR_GREEN + msg + EscapeSequences.RESET_TEXT_COLOR;
+    }
+    public static String getNegativeString(String msg){
+        return EscapeSequences.SET_TEXT_COLOR_RED + msg + EscapeSequences.RESET_TEXT_COLOR;
+    }
 
 }

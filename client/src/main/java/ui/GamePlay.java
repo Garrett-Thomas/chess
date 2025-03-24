@@ -10,8 +10,7 @@ public class GamePlay {
 
     private static ChessGame game = new ChessGame();
 
-    GamePlay() {
-    }
+
 
     public static void eval(String cmd, ArrayList<String> params) {
         switch (cmd) {
@@ -55,7 +54,6 @@ public class GamePlay {
             StringBuilder row = new StringBuilder();
             for (int j = 1; j < 9; j++) {
                 var piece = board.getPiece(new ChessPosition(i, j));
-
                 String block = getString(i, j, piece);
                 row.append(block);
 
@@ -65,17 +63,24 @@ public class GamePlay {
             rowsOfGame.add(row.toString());
         }
 
-        for (String row : rowsOfGame) {
-            System.out.println(row);
-        }
+        if(LocalStorage.getTeamColor() == ChessGame.TeamColor.BLACK){
+            for(String row : rowsOfGame){
 
+                System.out.println(row);
+            }
+        }
+        else{
+            for(int j = rowsOfGame.size() - 1; j >= 0; j--){
+                System.out.println(rowsOfGame.get(j));
+            }
+        }
 
 //        System.out.println(EscapeSequences.SET_BG_COLOR_BLUE +  "hello"  + EscapeSequences.RESET_BG_COLOR);
     }
 
     private static String getString(int i, int j, ChessPiece piece) {
         boolean tern = (i % 2 == 0 && j % 2 != 0 || i % 2 != 0 && j % 2 == 0);
-        tern = LocalStorage.getTeamColor() == ChessGame.TeamColor.WHITE ? !tern : tern;
+        tern = (LocalStorage.getTeamColor() == ChessGame.TeamColor.WHITE) != tern;
         String block =  tern ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
         if (piece == null) {
             block += EscapeSequences.EMPTY;

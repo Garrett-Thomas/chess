@@ -13,7 +13,7 @@ public class PreLogin {
 
     public static void eval(String cmd, ArrayList<String> params) throws Exception {
 
-           switch (cmd) {
+        switch (cmd) {
             case "login" -> login(params);
             case "register" -> register(params);
             case "quit" -> quit();
@@ -41,7 +41,8 @@ public class PreLogin {
         }
 
         LocalStorage.setToken(res.getAuthToken());
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully registered " + res.getUsername());
+        var msg = "Successfully registered " + res.getUsername()
+        System.out.println(StringUtils.getPositiveString(msg));
         ChessClient.state = ChessClient.ProgramState.POST_LOGIN;
 
 

@@ -38,4 +38,8 @@ public class LocalStorage {
     public static ChessGame.TeamColor getTeamColor() {
         return playerColor;
     }
+
+    public static void setTeamColor(ChessGame.TeamColor color) {
+        playerColor = color;
+    }
 }
