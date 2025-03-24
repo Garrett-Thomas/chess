@@ -1,8 +1,20 @@
-import chess.*;
 
 public class Main {
-    public static void main(String[] args) {
-        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        System.out.println("♕ 240 Chess Client: " + piece);
+
+    private enum ProgramState {
+        PRE_LOGIN,
+        POST_LOGIN,
+        GAMEPLAY;
     }
+    public static void main(String[] args) {
+
+        var gameState = ProgramState.PRE_LOGIN;
+        var serverUrl = "http://localhost:8080";
+        if (args.length == 1) {
+            serverUrl = args[0];
+        }
+
+        var client = new
+    }
+
 }
