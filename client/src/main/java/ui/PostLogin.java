@@ -19,6 +19,7 @@ public class PostLogin {
             case "logout" -> logout();
             case "create" -> createGame(params);
             case "list" -> listGames();
+            case "join" -> playGame(params);
             default -> System.out.println(help());
         }
 
@@ -63,17 +64,15 @@ public class PostLogin {
         System.out.println(stringBuilder.toString());
     }
 
-    private static void playGame(ArrayList<String> params) throws Exception{
+    private static void playGame(ArrayList<String> params) throws Exception {
         Integer gameID = LocalStorage.getGame(params.getFirst());
         String color = params.get(1);
         ChessGame.TeamColor playerColor;
-        if(Objects.equals(color, "black")){
+        if (Objects.equals(color, "black")) {
             playerColor = ChessGame.TeamColor.BLACK;
-        }
-        else if(Objects.equals(color, "white")){
+        } else if (Objects.equals(color, "white")) {
             playerColor = ChessGame.TeamColor.WHITE;
-        }
-        else{
+        } else {
             throw new UIException("Bad PlayerColor");
         }
 
@@ -92,6 +91,9 @@ public class PostLogin {
     }
 
     private static void observeGame(ArrayList<String> params) {
+
+        var gameID = LocalStorage.getGame(params.getFirst());
+        System.out.println("Observing game with ID: " + gameID);
     }
 
     private static String help() {
