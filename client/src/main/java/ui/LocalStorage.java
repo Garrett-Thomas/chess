@@ -1,11 +1,14 @@
 package ui;
 
+import chess.ChessGame;
+
 import java.util.HashMap;
 
 public class LocalStorage {
     private static String authToken = null;
     private static HashMap<String, Integer> gameNumToID = null;
     private static Integer currGameID = null;
+    private static ChessGame.TeamColor playerColor;
 
     public static String getToken() {
         return authToken;
@@ -23,10 +26,16 @@ public class LocalStorage {
     public static Integer getGame(String number) {
         return gameNumToID.get(number);
     }
-    public static void setCurrGameID(Integer gameID){
+
+    public static void setCurrGameID(Integer gameID) {
         currGameID = gameID;
     }
-    public static Integer getCurrGameID(){
+
+    public static Integer getCurrGameID() {
         return currGameID;
+    }
+
+    public static ChessGame.TeamColor getTeamColor() {
+        return playerColor;
     }
 }

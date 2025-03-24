@@ -20,6 +20,7 @@ public class PostLogin {
             case "create" -> createGame(params);
             case "list" -> listGames();
             case "join" -> playGame(params);
+            case "observe" -> observeGame(params);
             default -> System.out.println(help());
         }
 
