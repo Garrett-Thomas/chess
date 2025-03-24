@@ -29,7 +29,7 @@ public class PreLogin {
             throw new UIException(res.getMessage());
         }
 
-        ServerFacade.setToken(res.getAuthToken());
+        LocalStorage.setToken(res.getAuthToken());
         System.out.println("Successfully logged in " + res.getUsername());
         ChessClient.state = ChessClient.ProgramState.POST_LOGIN;
     }
@@ -40,7 +40,7 @@ public class PreLogin {
             throw new UIException(res.getMessage());
         }
 
-        ServerFacade.setToken(res.getAuthToken());
+        LocalStorage.setToken(res.getAuthToken());
         System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully registered " + res.getUsername());
         ChessClient.state = ChessClient.ProgramState.POST_LOGIN;
 

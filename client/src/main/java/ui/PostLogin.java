@@ -4,6 +4,7 @@ import passoff.model.TestCreateRequest;
 import server.ServerFacade;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PostLogin {
 
@@ -26,12 +27,12 @@ public class PostLogin {
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
-        ServerFacade.setToken(null);
+        LocalStorage.setToken(null);
         System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully logged out");
     }
 
     private static void createGame(ArrayList<String> params) throws Exception {
-        var res = server.createGame(new TestCreateRequest(params.getFirst()), ServerFacade.getToken());
+        var res = server.createGame(new TestCreateRequest(params.getFirst()), LocalStorage.getToken());
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
@@ -40,19 +41,31 @@ public class PostLogin {
     }
 
     private static void listGames() throws Exception {
-        var token = ServerFacade.getToken();
-        var res = server.listGames(ServerFacade.getToken());
+        var res = server.listGames(LocalStorage.getToken());
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
-
-        for (var game : res.getGames()) {
-            System.out.println(game);
+        HashMap<String, Integer> numToID = new HashMap<>();
+        var games = res.getGames();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < games.length; i++) {
+            stringBuilder.append(i);
+            stringBuilder.append(" ");
+            stringBuilder.append(games[i].getGameID());
+            stringBuilder.append("\n");
+            numToID.put(i + "", games[i].getGameID());
         }
+
+        LocalStorage.setGameMap(numToID);
+        System.out.println(stringBuilder.toString());
     }
 
-    private static void playGame(ArrayList<String> params) {
+    private static void playGame(ArrayList<String> params) throws Exception{
+        String gameNum = params.getFirst();
+        String color = params.get(1);
 
+
+        server.joinPlayer(new testJoinRequest(""))
     }
 
     private static void observeGame(ArrayList<String> params) {

@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class LocalStorage {
     private static String authToken = null;
-    private static HashMap<String, String> gameNumToID = null;
+    private static HashMap<String, Integer> gameNumToID = null;
 
     public static String getToken() {
         return authToken;
@@ -15,11 +15,11 @@ public class LocalStorage {
         authToken = token;
     }
 
-    public static void setGameMap(HashMap<String, String> map) {
+    public static void setGameMap(HashMap<String, Integer> map) {
         gameNumToID = map;
     }
 
-    public static String getGame(String number) {
+    public static Integer getGame(String number) {
         return gameNumToID.get(number);
     }
 
