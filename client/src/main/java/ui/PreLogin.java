@@ -30,7 +30,7 @@ public class PreLogin {
         }
 
         LocalStorage.setToken(res.getAuthToken());
-        System.out.println("Successfully logged in " + res.getUsername());
+        System.out.println(StringUtils.getPositiveString("Successfully logged in " + res.getUsername()));
         ChessClient.state = ChessClient.ProgramState.POST_LOGIN;
     }
 
@@ -41,7 +41,7 @@ public class PreLogin {
         }
 
         LocalStorage.setToken(res.getAuthToken());
-        var msg = "Successfully registered " + res.getUsername()
+        var msg = "Successfully registered " + res.getUsername();
         System.out.println(StringUtils.getPositiveString(msg));
         ChessClient.state = ChessClient.ProgramState.POST_LOGIN;
 

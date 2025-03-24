@@ -41,7 +41,9 @@ public class ChessClient {
                     var parsedInput = StringUtils.parseCommand(input);
                     var cmd = StringUtils.getCommand(parsedInput);
                     var params = parsedInput.size() > 1 ? StringUtils.getParameters(parsedInput) : new ArrayList<String>();
-
+                    if (cmd.equals("quit")) {
+                        System.exit(0);
+                    }
                     if (state == ProgramState.PRE_LOGIN) {
                         PreLogin.eval(cmd, params);
                     } else if (state == ProgramState.POST_LOGIN) {
@@ -54,10 +56,10 @@ public class ChessClient {
 //                }
 
             } catch (UIException e) {
-                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + e.getMessage() + EscapeSequences.RESET_TEXT_COLOR);
+                System.out.println(StringUtils.getNegativeString(e.getMessage()));
             } catch (Exception e) {
 
-                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "error" + EscapeSequences.RESET_TEXT_COLOR);
+                System.out.println(StringUtils.getNegativeString("error"));
 
             }
         }
