@@ -1,3 +1,5 @@
+import server.ChessClient;
+import server.ServerFacade;
 
 public class Main {
 
@@ -10,6 +12,9 @@ public class Main {
         if (args.length == 1) {
             serverUrl = args[0];
         }
+        ChessClient client = new ChessClient();
+        client.run();
+
     }
 
 }

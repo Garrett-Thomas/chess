@@ -1,3 +1,5 @@
+package server;
+
 import passoff.server.TestServerFacade;
 
 public class ServerFacade extends TestServerFacade {
