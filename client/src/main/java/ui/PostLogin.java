@@ -1,10 +1,13 @@
 package ui;
 
+import chess.ChessGame;
 import passoff.model.TestCreateRequest;
+import passoff.model.TestJoinRequest;
 import server.ServerFacade;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class PostLogin {
 
@@ -61,11 +64,31 @@ public class PostLogin {
     }
 
     private static void playGame(ArrayList<String> params) throws Exception{
-        String gameNum = params.getFirst();
+        Integer gameID = LocalStorage.getGame(params.getFirst());
         String color = params.get(1);
+        ChessGame.TeamColor playerColor;
+        if(Objects.equals(color, "black")){
+            playerColor = ChessGame.TeamColor.BLACK;
+        }
+        else if(Objects.equals(color, "white")){
+            playerColor = ChessGame.TeamColor.WHITE;
+        }
+        else{
+            throw new UIException("Bad PlayerColor");
+        }
 
+        var joinReq = new TestJoinRequest(playerColor, gameID);
 
-        server.joinPlayer(new testJoinRequest(""))
+        var res = server.joinPlayer(joinReq, LocalStorage.getToken());
+
+        if (res.getMessage() != null) {
+            throw new UIException(res.getMessage());
+        }
+
+        LocalStorage.setCurrGameID(gameID);
+
+        System.out.println("Successfully join game");
+
     }
 
     private static void observeGame(ArrayList<String> params) {
