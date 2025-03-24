@@ -11,13 +11,9 @@ public class PreLogin {
 
     private static final ServerFacade server = ServerFacade.getInstance();
 
-    public static void eval(String input) throws Exception {
+    public static void eval(String cmd, ArrayList<String> params) throws Exception {
 
-        var parsedInput = StringUtils.parseCommand(input);
-        var cmd = StringUtils.getCommand(parsedInput);
-        var params = parsedInput.size() > 1 ? StringUtils.getParameters(parsedInput) : new ArrayList<String>();
-
-        switch (cmd) {
+           switch (cmd) {
             case "login" -> login(params);
             case "register" -> register(params);
             case "quit" -> quit();
@@ -33,6 +29,7 @@ public class PreLogin {
             throw new UIException(res.getMessage());
         }
 
+        ServerFacade.setToken(res.getAuthToken());
         System.out.println("Successfully logged in " + res.getUsername());
         ChessClient.state = ChessClient.ProgramState.POST_LOGIN;
     }
@@ -43,6 +40,7 @@ public class PreLogin {
             throw new UIException(res.getMessage());
         }
 
+        ServerFacade.setToken(res.getAuthToken());
         System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully registered " + res.getUsername());
         ChessClient.state = ChessClient.ProgramState.POST_LOGIN;
 

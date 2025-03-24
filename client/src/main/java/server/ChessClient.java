@@ -1,9 +1,8 @@
 package server;
 
-import ui.EscapeSequences;
-import ui.PreLogin;
-import ui.UIException;
+import ui.*;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ChessClient {
@@ -27,26 +26,34 @@ public class ChessClient {
 
         System.out.println("Welcome to ChessGame, enter \"Help\" to start");
 
-        try {
-            while (true) {
-                var input = scanner.nextLine();
-                if (state == ProgramState.PRE_LOGIN) {
-                    PreLogin.eval(input);
-                } else if (state == ProgramState.POST_LOGIN) {
 
+        while (true) {
+            try {
+                System.out.print(">> " + EscapeSequences.moveCursorToLocation(3, 0));
+                var input = scanner.nextLine();
+
+                var parsedInput = StringUtils.parseCommand(input);
+                var cmd = StringUtils.getCommand(parsedInput);
+                var params = parsedInput.size() > 1 ? StringUtils.getParameters(parsedInput) : new ArrayList<String>();
+
+                if (state == ProgramState.PRE_LOGIN) {
+                    PreLogin.eval(cmd, params);
+                } else if (state == ProgramState.POST_LOGIN) {
+                    PostLogin.eval(cmd, params);
                 } else if (state == ProgramState.GAMEPLAY) {
 
 
                 }
 
+            } catch (UIException e) {
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + e.getMessage());
+            } catch (Exception e) {
+
+                System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + "error");
+
             }
-
-        } catch (UIException e) {
-            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + e.getMessage());
-        } catch (Exception e) {
-
-            System.out.println(e.getMessage());
         }
+
 
     }
 }
