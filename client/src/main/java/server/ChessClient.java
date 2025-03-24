@@ -1,6 +1,8 @@
 package server;
 
+import ui.EscapeSequences;
 import ui.PreLogin;
+import ui.UIException;
 
 import java.util.Scanner;
 
@@ -39,7 +41,10 @@ public class ChessClient {
 
             }
 
+        } catch (UIException e) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + e.getMessage());
         } catch (Exception e) {
+
             System.out.println(e.getMessage());
         }
 

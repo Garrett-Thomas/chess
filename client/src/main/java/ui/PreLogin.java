@@ -30,8 +30,9 @@ public class PreLogin {
     private static void login(ArrayList<String> params) throws Exception {
         var res = server.login(new TestUser(params.get(0), params.get(1)));
         if (res.getMessage() != null) {
-            throw new Exception("err");
+            throw new UIException(res.getMessage());
         }
+
         System.out.println("Successfully logged in " + res.getUsername());
         ChessClient.state = ChessClient.ProgramState.POST_LOGIN;
     }
@@ -39,10 +40,10 @@ public class PreLogin {
     private static void register(ArrayList<String> params) throws Exception {
         var res = server.register(new TestUser(params.get(0), params.get(1), params.get(2)));
         if (res.getMessage() != null) {
-            throw new Exception("err");
+            throw new UIException(res.getMessage());
         }
 
-        System.out.println("Successfully registered " + res.getUsername());
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully registered " + res.getUsername());
         ChessClient.state = ChessClient.ProgramState.POST_LOGIN;
 
 
