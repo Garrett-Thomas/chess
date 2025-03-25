@@ -80,7 +80,7 @@ public class GamePlay {
         }
 
         gameBoard.add(header);
-        if (LocalStorage.getTeamColor() == ChessGame.TeamColor.BLACK) {
+        if (LocalStorage.getTeamColor() == ChessGame.TeamColor.WHITE) {
             for (ArrayList<String> row : gameBoard) {
                 System.out.println(String.join("", row));
             }

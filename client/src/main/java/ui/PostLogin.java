@@ -29,12 +29,14 @@ public class PostLogin {
 
 
     private static void logout() throws Exception {
-        var res = SERVER.logout(ServerFacade.getToken());
+        var res = SERVER.logout(LocalStorage.getToken());
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
         LocalStorage.setToken(null);
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully logged out");
+        ChessClient.state = ChessClient.ProgramState.PRE_LOGIN;
+        var msg = EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully logged out" + EscapeSequences.RESET_TEXT_COLOR;
+        System.out.println(msg);
     }
 
     private static void createGame(ArrayList<String> params) throws Exception {
@@ -68,7 +70,13 @@ public class PostLogin {
         stringBuilder.append("\n");
 
         for (int i = 0; i < games.length; i++) {
-            var row = formatRow(i + "", games[i].getGameName(), games[i].getWhiteUsername(), games[i].getBlackUsername());
+
+            var whiteUsername = games[i].getWhiteUsername();
+            var blackUsername = games[i].getBlackUsername();
+            whiteUsername = whiteUsername == null ? "available" : whiteUsername;
+            blackUsername = blackUsername == null ? "available" : blackUsername;
+
+            var row = formatRow(i + "", games[i].getGameName(), whiteUsername, blackUsername);
             stringBuilder.append(row);
             stringBuilder.append("\n");
             numToID.put(i + "", games[i].getGameID());
@@ -121,7 +129,7 @@ public class PostLogin {
             throw new UIException("Error: Invalid game number");
         }
 
-        System.out.println("Observing game with ID: " + gameID);
+        System.out.println("Observing game " + params.getFirst());
         LocalStorage.setTeamColor(ChessGame.TeamColor.WHITE);
 //        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
         GamePlay.drawBoard();
