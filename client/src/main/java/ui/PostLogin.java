@@ -96,6 +96,8 @@ public class PostLogin {
         LocalStorage.setCurrGameID(gameID);
 
         System.out.println("Successfully joined game");
+
+        LocalStorage.setTeamColor(playerColor);
         ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
 
     }
@@ -104,6 +106,7 @@ public class PostLogin {
 
         var gameID = LocalStorage.getGame(params.getFirst());
         System.out.println("Observing game with ID: " + gameID);
+        LocalStorage.setTeamColor(ChessGame.TeamColor.WHITE);
         ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
     }
 

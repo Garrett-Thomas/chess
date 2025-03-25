@@ -75,7 +75,6 @@ public class GamePlay {
 
             }
 
-
             row.add(col);
             gameBoard.add(row);
         }
@@ -97,7 +96,6 @@ public class GamePlay {
                 System.out.println(reversedRow);
             }
         }
-//        System.out.println(EscapeSequences.SET_BG_COLOR_BLUE +  "hello"  + EscapeSequences.RESET_BG_COLOR);
     }
 
     private static String getString(int i, int j, ChessPiece piece) {
