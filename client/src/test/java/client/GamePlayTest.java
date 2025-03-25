@@ -1,3 +1,4 @@
+package client;
 import chess.ChessGame;
 import org.junit.jupiter.api.Test;
 import ui.GamePlay;
