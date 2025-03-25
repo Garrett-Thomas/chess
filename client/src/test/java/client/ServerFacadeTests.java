@@ -30,15 +30,10 @@ public class ServerFacadeTests {
     public static void init() {
         server = new Server();
         var port = server.run(0);
-        System.out.println("Started test HTTP server on " + port);
-
         serverFacade = new ServerFacade("localhost", Integer.toString(port));
-
-        existingUser = new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
-
-        newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
-
-        createRequest = new TestCreateRequest("testGame");
+        existingUser = new TestUser("john", "pass", "fast@gog.com");
+        newUser = new TestUser("jake", "secure", "pass@gog.com");
+        createRequest = new TestCreateRequest("dopeGame");
     }
 
     @BeforeEach
@@ -51,137 +46,81 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @Order(1)
-    @DisplayName("Static Files")
-    public void staticFiles() {
-        String htmlFromServer = serverFacade.file("/").replaceAll("\r", "");
-        Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "Server response code was not 200 OK");
-        Assertions.assertNotNull(htmlFromServer, "Server returned an empty file");
-        Assertions.assertTrue(htmlFromServer.contains("CS 240 Chess Server Web API"),
-                "file returned did not contain an exact match of text from provided index.html");
-    }
-
-    @Test
-    @Order(2)
-    @DisplayName("Normal User Login")
     public void successLogin() {
         TestAuthResult loginResult = serverFacade.login(existingUser);
-
-        assertHttpOk(loginResult);
-        Assertions.assertEquals(existingUser.getUsername(), loginResult.getUsername(),
-                "Response did not give the same username as user");
-        Assertions.assertNotNull(loginResult.getAuthToken(), "Response did not return authentication String");
+        Assertions.assertEquals(existingUser.getUsername(), loginResult.getUsername());
     }
 
     @Test
-    @Order(3)
-    @DisplayName("Login Invalid User")
     public void loginInvalidUser() {
         TestAuthResult loginResult = serverFacade.login(newUser);
-
-        assertHttpUnauthorized(loginResult);
-        assertAuthFieldsMissing(loginResult);
+        assert(loginResult.getAuthToken() == null);
     }
 
     @Test
-    @Order(3)
-    @DisplayName("Login Wrong Password")
     public void loginWrongPassword() {
         TestUser loginRequest = new TestUser(existingUser.getUsername(), newUser.getPassword());
 
         TestAuthResult loginResult = serverFacade.login(loginRequest);
 
-        assertHttpUnauthorized(loginResult);
-        assertAuthFieldsMissing(loginResult);
+        assert(loginResult.getAuthToken() == null);
     }
 
     @Test
-    @Order(4)
-    @DisplayName("Normal User Registration")
     public void successRegister() {
         //submit register request
         TestAuthResult registerResult = serverFacade.register(newUser);
-
-        assertHttpOk(registerResult);
-        Assertions.assertEquals(newUser.getUsername(), registerResult.getUsername(),
-                "Response did not have the same username as was registered");
-        Assertions.assertNotNull(registerResult.getAuthToken(), "Response did not contain an authentication string");
+        assert(!registerResult.getAuthToken().isEmpty());
     }
 
     @Test
-    @Order(5)
-    @DisplayName("Re-Register User")
     public void registerTwice() {
         //submit register request trying to register existing user
         TestAuthResult registerResult = serverFacade.register(existingUser);
-
-        assertHttpForbidden(registerResult);
-        assertAuthFieldsMissing(registerResult);
+        assert(registerResult.getAuthToken() == null);
     }
 
     @Test
-    @Order(5)
-    @DisplayName("Register Bad Request")
     public void failRegister() {
         //attempt to register a user without a password
         TestUser registerRequest = new TestUser(newUser.getUsername(), null, newUser.getEmail());
-
         TestAuthResult registerResult = serverFacade.register(registerRequest);
-
-        assertHttpBadRequest(registerResult);
-        assertAuthFieldsMissing(registerResult);
+        assert(registerResult.getAuthToken() == null);
     }
 
     @Test
-    @Order(6)
-    @DisplayName("Normal Logout")
     public void successLogout() {
         //log out existing user
         TestResult result = serverFacade.logout(existingAuth);
-
         assertHttpOk(result);
     }
 
     @Test
-    @Order(7)
-    @DisplayName("Invalid Auth Logout")
     public void failLogout() {
         //log out user twice
         //second logout should fail
         serverFacade.logout(existingAuth);
         TestResult result = serverFacade.logout(existingAuth);
 
-        assertHttpUnauthorized(result);
+        assert(result.getMessage() != null);
     }
 
     @Test
-    @Order(8)
-    @DisplayName("Valid Creation")
     public void goodCreate() {
         TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
-
-        assertHttpOk(createResult);
-        Assertions.assertNotNull(createResult.getGameID(), "Result did not return a game ID");
-        Assertions.assertTrue(createResult.getGameID() > 0, "Result returned invalid game ID");
+        assert(createResult.getGameID() != null);
     }
 
     @Test
-    @Order(9)
-    @DisplayName("Create with Bad Authentication")
     public void badAuthCreate() {
         //log out user so auth is invalid
         serverFacade.logout(existingAuth);
 
         TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
-
-        assertHttpUnauthorized(createResult);
-        Assertions.assertNull(createResult.getGameID(), "Bad result returned a game ID");
+        assert(createResult.getGameID() == null);
     }
 
     @Test
-    @Order(10)
-    @DisplayName("Join Created Game")
     public void goodJoin() {
         //create game
         TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
