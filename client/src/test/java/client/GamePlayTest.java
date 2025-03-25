@@ -11,7 +11,7 @@ public class GamePlayTest {
    @Test
    public void drawGame(){
 
-       LocalStorage.setTeamColor(ChessGame.TeamColor.BLACK);
+       LocalStorage.setTeamColor(ChessGame.TeamColor.WHITE);
        GamePlay.drawBoard();
 
 

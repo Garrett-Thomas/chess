@@ -100,7 +100,6 @@ public class GamePlay {
 
     private static String getString(int i, int j, ChessPiece piece) {
         boolean tern = (i % 2 == 0 && j % 2 != 0 || i % 2 != 0 && j % 2 == 0);
-        tern = (LocalStorage.getTeamColor() == ChessGame.TeamColor.WHITE) != tern;
         String block = tern ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
         if (piece == null) {
             block += EscapeSequences.EMPTY;

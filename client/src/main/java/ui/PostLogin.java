@@ -99,7 +99,8 @@ public class PostLogin {
         System.out.println("Successfully joined game");
 
         LocalStorage.setTeamColor(playerColor);
-        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
+        GamePlay.drawBoard();
+//        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
 
     }
 
@@ -108,7 +109,8 @@ public class PostLogin {
         var gameID = LocalStorage.getGame(params.getFirst());
         System.out.println("Observing game with ID: " + gameID);
         LocalStorage.setTeamColor(ChessGame.TeamColor.WHITE);
-        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
+//        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
+        GamePlay.drawBoard();
     }
 
     private static String help() {
