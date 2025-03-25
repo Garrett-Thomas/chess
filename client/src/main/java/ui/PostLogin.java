@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public class PostLogin {
 
-    private static final ServerFacade server = ServerFacade.getInstance();
+    private static final ServerFacade SERVER = ServerFacade.getInstance();
 
     public static void eval(String cmd, ArrayList<String> params) throws Exception {
 
@@ -29,7 +29,7 @@ public class PostLogin {
 
 
     private static void logout() throws Exception {
-        var res = server.logout(ServerFacade.getToken());
+        var res = SERVER.logout(ServerFacade.getToken());
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
@@ -38,12 +38,13 @@ public class PostLogin {
     }
 
     private static void createGame(ArrayList<String> params) throws Exception {
-        var res = server.createGame(new TestCreateRequest(params.getFirst()), LocalStorage.getToken());
+        var res = SERVER.createGame(new TestCreateRequest(params.getFirst()), LocalStorage.getToken());
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
 
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN + "Successfully create a game with the name " + params.getFirst() + EscapeSequences.RESET_TEXT_COLOR);
+        var msg = EscapeSequences.SET_TEXT_COLOR_GREEN + "Created game w/ name: " + params.getFirst() + EscapeSequences.RESET_TEXT_COLOR;
+        System.out.println(msg);
     }
 
     private static String formatRow(String num, String name, String whiteName, String blackName) {
@@ -51,7 +52,7 @@ public class PostLogin {
     }
 
     private static void listGames() throws Exception {
-        var res = server.listGames(LocalStorage.getToken());
+        var res = SERVER.listGames(LocalStorage.getToken());
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
@@ -87,7 +88,7 @@ public class PostLogin {
 
         var joinReq = new TestJoinRequest(playerColor, gameID);
 
-        var res = server.joinPlayer(joinReq, LocalStorage.getToken());
+        var res = SERVER.joinPlayer(joinReq, LocalStorage.getToken());
 
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());

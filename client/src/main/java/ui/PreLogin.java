@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class PreLogin {
 
-    private static final ServerFacade server = ServerFacade.getInstance();
+    private static final ServerFacade SERVER = ServerFacade.getInstance();
 
     public static void eval(String cmd, ArrayList<String> params) throws Exception {
 
@@ -24,7 +24,7 @@ public class PreLogin {
     }
 
     private static void login(ArrayList<String> params) throws Exception {
-        var res = server.login(new TestUser(params.get(0), params.get(1)));
+        var res = SERVER.login(new TestUser(params.get(0), params.get(1)));
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
@@ -35,7 +35,7 @@ public class PreLogin {
     }
 
     private static void register(ArrayList<String> params) throws Exception {
-        var res = server.register(new TestUser(params.get(0), params.get(1), params.get(2)));
+        var res = SERVER.register(new TestUser(params.get(0), params.get(1), params.get(2)));
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
