@@ -59,7 +59,7 @@ public class ChessClient {
                 System.out.println(StringUtils.getNegativeString(e.getMessage()));
             } catch (Exception e) {
 
-                System.out.println(StringUtils.getNegativeString("error"));
+                System.out.println(StringUtils.getNegativeString(e.getMessage()));
 
             }
         }

@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class LocalStorage {
     private static String authToken = null;
-    private static HashMap<String, Integer> gameNumToID = null;
+    private static HashMap<String, Integer> gameNumToID = new HashMap<>();
     private static Integer currGameID = null;
     private static ChessGame.TeamColor playerColor;
 

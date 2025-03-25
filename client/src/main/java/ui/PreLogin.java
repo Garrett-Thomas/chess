@@ -24,9 +24,12 @@ public class PreLogin {
     }
 
     private static void login(ArrayList<String> params) throws Exception {
+        if(params.size() != 2){
+            throw new UIException("Error: Invalid amount of parameters");
+        }
         var res = SERVER.login(new TestUser(params.get(0), params.get(1)));
-        if (res.getMessage() != null) {
-            throw new UIException(res.getMessage());
+        if (res.getMessage() != null && res.getMessage().contains("unauthorized")) {
+            throw new UIException("Error: Invalid Credentials");
         }
 
         LocalStorage.setToken(res.getAuthToken());
@@ -35,7 +38,14 @@ public class PreLogin {
     }
 
     private static void register(ArrayList<String> params) throws Exception {
+        if(params.size() != 3){
+            throw new UIException("Error: Invalid amount of parameters");
+        }
         var res = SERVER.register(new TestUser(params.get(0), params.get(1), params.get(2)));
+        if(res.getMessage() != null && res.getMessage().contains("already")){
+            throw new UIException("Error: User already exists");
+        }
+
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }

@@ -39,6 +39,10 @@ public class PostLogin {
 
     private static void createGame(ArrayList<String> params) throws Exception {
         var res = SERVER.createGame(new TestCreateRequest(params.getFirst()), LocalStorage.getToken());
+        if (params.size() != 1) {
+            throw new UIException("Error: Invalid amount of parameters");
+        }
+
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
@@ -75,6 +79,9 @@ public class PostLogin {
     }
 
     private static void playGame(ArrayList<String> params) throws Exception {
+        if (params.size() != 2) {
+            throw new UIException("Error: Invalid amount of parameters");
+        }
         Integer gameID = LocalStorage.getGame(params.getFirst());
         String color = params.get(1);
         ChessGame.TeamColor playerColor;
@@ -83,7 +90,7 @@ public class PostLogin {
         } else if (Objects.equals(color, "white")) {
             playerColor = ChessGame.TeamColor.WHITE;
         } else {
-            throw new UIException("Bad PlayerColor");
+            throw new UIException("Error: Bad Color");
         }
 
         var joinReq = new TestJoinRequest(playerColor, gameID);
@@ -104,9 +111,16 @@ public class PostLogin {
 
     }
 
-    private static void observeGame(ArrayList<String> params) {
-
+    private static void observeGame(ArrayList<String> params) throws Exception {
+        if (params.size() != 1) {
+            throw new UIException("Error: Invalid amount of parameters");
+        }
         var gameID = LocalStorage.getGame(params.getFirst());
+
+        if (gameID == null) {
+            throw new UIException("Error: Invalid game number");
+        }
+
         System.out.println("Observing game with ID: " + gameID);
         LocalStorage.setTeamColor(ChessGame.TeamColor.WHITE);
 //        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
