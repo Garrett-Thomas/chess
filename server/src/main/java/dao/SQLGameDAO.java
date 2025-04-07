@@ -14,6 +14,7 @@ import java.util.UUID;
 
 public class SQLGameDAO implements GameDAO {
 
+
     private static final String GET_GAMES_STRINGS = """
             SELECT * FROM games;
             """;
@@ -42,6 +43,11 @@ public class SQLGameDAO implements GameDAO {
             sqlGameDAO = new SQLGameDAO();
         }
         return sqlGameDAO;
+    }
+
+
+    public void updateGame(ChessGame game, int gameId) throws ServiceException {
+        DbUtils.executeUpdate(UPDATE_GAME_STRING, game, gameId);
     }
 
 

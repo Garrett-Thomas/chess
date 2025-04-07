@@ -1,10 +1,14 @@
 package server;
 
 import chess.ChessGame;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dao.SQLAuthDAO;
 import dao.SQLGameDAO;
 import dao.SQLUserDAO;
+import dataaccess.ConnectionManager;
+import dataaccess.DatabaseManager;
+import dataaccess.DbUtils;
 import org.eclipse.jetty.websocket.api.*;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import websocket.commands.UserGameCommand;
@@ -20,6 +24,7 @@ public class WebSocketHandler {
     private static SQLUserDAO userDAO = SQLUserDAO.getInstance();
     private static SQLGameDAO gameDAO = SQLGameDAO.getInstance();
     private static SQLAuthDAO authDAO = SQLAuthDAO.getInstance();
+    private final static ConnectionManager connections = new ConnectionManager();
 
     @OnWebSocketMessage
     public void onMessage(Session user, String message) throws IOException {
@@ -46,20 +51,22 @@ public class WebSocketHandler {
                 var username = authDAO.getUsername(command.getAuthToken());
                 var userData = userDAO.getUser(username);
                 ChessGame chessGame = null;
-                for(var game : gameList){
-                    if (game.gameID() == command.getGameID()){
+                for (var game : gameList) {
+                    if (game.gameID() == command.getGameID()) {
                         chessGame = game.game();
                     }
                 }
 
-                if(chessGame == null){
+                if (chessGame == null) {
                     throw new IOException("Can't find game");
                 }
 
-
-
-
-
+                try {
+                    chessGame.makeMove(command.getMove());
+                    connections.broadcast(null, );
+                } catch (InvalidMoveException e) {
+                    throw new RuntimeException(e);
+                }
 
             }
 

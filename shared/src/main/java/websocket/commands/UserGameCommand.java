@@ -38,7 +38,7 @@ public class UserGameCommand {
         RESIGN
     }
 
-    public ChessMove getGame() {
+    public ChessMove getMove() {
         return move;
     }
 

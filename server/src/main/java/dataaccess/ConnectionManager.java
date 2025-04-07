@@ -5,27 +5,34 @@ import org.eclipse.jetty.websocket.api.Session;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
+/**
+ * Need to be able to broadcast to each member of a game and exclude people in the game
+ * Perhaps a better way to do this is to map the gameID's to a Connection object that
+ * has the session and name
+ */
 public class ConnectionManager {
 
-    private static final HashMap<String, Session> connections = new HashMap<>();
+    private final HashMap<Integer, ArrayList<Connection>> connMap = new HashMap<>();
 
-    public void broadcast(String excludeName, String msg) throws IOException {
-        ArrayList<String> removeList = new ArrayList<>();
-        for (String name : connections.keySet()) {
-            if (connections.get(name).isOpen()) {
+    public void broadcast(Set<String> toExclude, Integer gameID, String msg) throws IOException {
+        ArrayList<Connection> removeList = new ArrayList<>();
+        var connList = connMap.get(gameID);
+        for (var conn : connList) {
+            if (conn.session().isOpen()) {
 
-                if (!name.equals(excludeName)) {
-                    connections.get(name).getRemote().sendString(msg);
+                if (!toExclude.contains(conn.name())) {
+
+                    conn.session().getRemote().sendString(msg);
                 }
 
             } else {
-                removeList.add(name);
+                removeList.add(conn);
             }
         }
 
-        for (String toRemove : removeList) {
-            connections.remove(toRemove);
-        }
+        connList.removeAll(removeList);
+        connMap.put(gameID, connList);
     }
 }
