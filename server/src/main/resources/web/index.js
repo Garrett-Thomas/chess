@@ -134,7 +134,11 @@ function socketClose(event) {
 
 
 function connectWs() {
-  socket = new WebSocket(`ws://${window.location.host}/ws`);
+  socket = new WebSocket(`ws://${window.location.host}/ws`, [],{
+                                                                 headers: {
+                                                                   'Sec-WebSocket-Extensions': ''
+                                                                 }
+                                                               });
   socket.addEventListener("open", socketOpen);
   socket.addEventListener("message", socketMessage);
   socket.addEventListener("error", socketError);

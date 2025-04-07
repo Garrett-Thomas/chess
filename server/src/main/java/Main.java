@@ -1,5 +1,8 @@
 import chess.*;
 import server.Server;
+import spark.Spark;
+
+import static spark.Spark.webSocket;
 
 public class Main {
     public static void main(String[] args) {
@@ -8,6 +11,6 @@ public class Main {
 
         Server server = new Server();
 
-        server.run(8080);
+        server.run(8000);
     }
 }

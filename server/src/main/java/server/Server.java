@@ -1,21 +1,21 @@
 package server;
 
 import com.google.gson.Gson;
-import dao.*;
 import dataaccess.DbUtils;
 import dataaccess.ServiceException;
 import model.ResponseSuper;
 import spark.*;
-
-import static spark.Spark.before;
+import static spark.Spark.webSocket;
 
 public class Server {
     private final AuthHandler authHandler;
     private final GameHandler gameHandler;
+    private final WebSocketHandler webSocketHandler;
 
     public Server() {
         this.authHandler = new AuthHandler();
         this.gameHandler = new GameHandler();
+        this.webSocketHandler = new WebSocketHandler();
     }
 
     public int run(int desiredPort) {
@@ -24,14 +24,25 @@ public class Server {
         Spark.staticFiles.location("web");
         // Register your endpoints and handle exceptions here.
 
-        //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
+
         Spark.exception(ServiceException.class, (ServiceException se, Request req, Response res) -> {
             res.status(se.getStatusCode());
 
             System.err.println(se.getMessage());
             res.body(new Gson().toJson(new ResponseSuper(se.getResponse())));
         });
+
+//        Spark.before("*", (Request req, Response res)->{
+//            if(!req.headers("Sec-WebSocket-Extensions").isEmpty()){
+//                System.out.println("ooh ahh");
+//            }
+//        });
+//
+        // Crucial that this is placed before the after middleware
+        // I suspect that it tries to apply the middleware to the ws connection
+        // and weird things happen or tries treating the /ws route as http
+        webSocket("/ws", webSocketHandler);
+
 
         Spark.after("*", (Request req, Response res) -> {
             res.type("application/json");
@@ -48,7 +59,7 @@ public class Server {
             return new Gson().toJson(null);
         });
 
-
+        Spark.init();
         Spark.awaitInitialization();
         return Spark.port();
     }
