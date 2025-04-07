@@ -1,25 +1,34 @@
 package websocket.commands;
 
+import chess.ChessGame;
+
 import java.util.Objects;
 
 /**
  * Represents a command a user can send the server over a websocket
- *
+ * <p>
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
 public class UserGameCommand {
 
     private final CommandType commandType;
-
     private final String authToken;
-
     private final Integer gameID;
+    private final ChessGame game;
 
     public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;
+        this.game = null;
+    }
+
+    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, ChessGame game) {
+        this.commandType = commandType;
+        this.authToken = authToken;
+        this.gameID = gameID;
+        this.game = game;
     }
 
     public enum CommandType {
@@ -27,6 +36,10 @@ public class UserGameCommand {
         MAKE_MOVE,
         LEAVE,
         RESIGN
+    }
+
+    public ChessGame getGame() {
+        return game;
     }
 
     public CommandType getCommandType() {
