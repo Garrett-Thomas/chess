@@ -49,14 +49,20 @@ public class WebSocketHandler {
                 for(var game : gameList){
                     if (game.gameID() == command.getGameID()){
                         chessGame = game.game();
-
                     }
                 }
+
                 if(chessGame == null){
                     throw new IOException("Can't find game");
                 }
 
+
+
+
+
+
             }
+
         }
     }
 
