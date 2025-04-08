@@ -16,19 +16,50 @@ public class ConnectionManager {
 
     private final HashMap<Integer, ArrayList<SockConnection>> connMap = new HashMap<>();
 
+
+    private SockConnection getUserByName(Integer gameID, String username) {
+        var connList = connMap.get(gameID);
+        SockConnection playerConn = null;
+
+        for (var conn : connList) {
+            if (conn.name().equals(username)) {
+                playerConn = conn;
+            }
+        }
+
+        if (playerConn == null) {
+            throw new RuntimeException(String.format("%s not connected", username));
+        }
+
+        return playerConn;
+    }
+
+    public void disconnect(Integer gameID, String username) {
+        try {
+            var userConn = getUserByName(gameID, username);
+            userConn.session().disconnect();
+
+        } catch (IOException e) {
+            System.err.println(String.format("Could not disconnect %s", username));
+        }
+
+
+    }
+
+
     public void addConnection(Integer gameID, SockConnection sockConnection) {
         var connList = connMap.get(gameID);
         connList.add(sockConnection);
         connMap.put(gameID, connList);
     }
 
-    public void removeConnection(Integer gameID, SockConnection sockConnection){
-
+    public void removeConnection(Integer gameID, String username) {
         var connList = connMap.get(gameID);
-        connList.add(sockConnection);
+        var userConn = getUserByName(gameID, username);
+        connList.remove(userConn);
         connMap.put(gameID, connList);
-
     }
+
     public void broadcast(Set<String> toExclude, Integer gameID, String msg) throws IOException {
         ArrayList<SockConnection> removeList = new ArrayList<>();
         var connList = connMap.get(gameID);

@@ -45,10 +45,8 @@ public class SQLGameDAO implements GameDAO {
         return sqlGameDAO;
     }
 
-
-    public void updateGame(String game, int gameId) throws ServiceException {
-
-        DbUtils.executeUpdate(UPDATE_GAME_STRING, game, gameId);
+    public void updateGame(GameData game, int gameId) throws ServiceException {
+        DbUtils.executeUpdate(UPDATE_GAME_STRING, gson.toJson(game), gameId);
     }
 
 

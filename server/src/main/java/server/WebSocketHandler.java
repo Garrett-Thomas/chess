@@ -7,10 +7,8 @@ import dao.GameDAO;
 import dao.SQLAuthDAO;
 import dao.SQLGameDAO;
 import dao.SQLUserDAO;
-import dataaccess.ConnectionManager;
-import dataaccess.DatabaseManager;
-import dataaccess.DbUtils;
-import dataaccess.ServiceException;
+import dataaccess.*;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.*;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import utils.GsonParent;
@@ -36,25 +34,26 @@ public class WebSocketHandler {
     private final static Gson gson = GsonParent.getInstance();
 
 
-
     @OnWebSocketMessage
     public void onMessage(Session user, String message) throws IOException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+        var username = authDAO.getUsername(command.getAuthToken());
+        var gameID = command.getGameID();
+
         switch (command.getCommandType()) {
 
             // Implied that the client has already joined a game via http so just need to find user using token
             case CONNECT -> {
-//                String username = authDAO.getUsername(command.getAuthToken());
-//                var userData = userDAO.getUser(username);
-                connections.
                 var gameList = gameDAO.getGames();
                 for (var game : gameList) {
+
                     // Want to "join" this game
                     if (game.gameID() == command.getGameID()) {
                         user.getRemote().sendString(new Gson().toJson(new LoadGameMessage(LOAD_GAME, new Gson().toJson(game))));
+                        var sockConnection = new SockConnection(username, user);
+                        connections.addConnection(game.gameID(), sockConnection);
                     }
                 }
-                break;
             }
 
 
@@ -62,16 +61,16 @@ public class WebSocketHandler {
 
                 var moveCommand = GsonParent.getInstance().fromJson(message, MakeMoveCommand.class);
                 var gameList = gameDAO.getGames();
-                var username = authDAO.getUsername(moveCommand.getAuthToken());
-                var gameID = moveCommand.getGameID();
 
                 ChessGame.TeamColor teamColor = null;
+
+                GameData gameData = null;
                 ChessGame chessGame = null;
 
                 for (var game : gameList) {
                     if (game.gameID() == moveCommand.getGameID()) {
                         chessGame = game.game();
-
+                        gameData = game;
                         if (game.blackUsername() == null || game.whiteUsername() == null) {
                             throw new RuntimeException("Game has not started yet");
                         }
@@ -95,11 +94,13 @@ public class WebSocketHandler {
                     }
 
 
+                    // Add logic to check for checkmate, stalemate etc
                     chessGame.makeMove(moveCommand.getMove());
 
+                    var updatedGame = new GameData(gameID, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), chessGame);
 
-                    var gameJson = gson.toJson(chessGame);
-//                    gameDAO.updateGame(gameJson, gameID);
+                    gameDAO.updateGame(updatedGame, gameID);
+
                     String loadGame = new Gson().toJson(new LoadGameMessage(LOAD_GAME, gameJson));
                     connections.broadcast(null, gameID, loadGame);
 
@@ -108,9 +109,31 @@ public class WebSocketHandler {
                 } catch (InvalidMoveException e) {
                     throw new RuntimeException(e);
                 }
+                // If the db update fails
+                catch (ServiceException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+            case LEAVE -> {
+                String note = String.format("Player %s has left", username);
+                var notification = gson.toJson(new NotificationMessage(NOTIFICATION, note));
+//                gameDAO.
+                connections.broadcast(Collections.singleton(username), gameID, notification);
+                connections.disconnect(gameID, username);
+                connections.removeConnection(gameID, username);
 
             }
 
+            case RESIGN -> {
+                String note = String.format("Player %s has resigned", username);
+                var notification = gson.toJson(new NotificationMessage(NOTIFICATION, note));
+                connections.broadcast(Collections.singleton(username), gameID, notification);
+                connections.disconnect(gameID, username);
+                connections.removeConnection(gameID, username);
+
+
+            }
         }
     }
 

@@ -18,15 +18,21 @@ public class ChessGame {
 
     TeamColor teamTurn;
     ChessBoard board;
+    boolean isGameOver;
 
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
         this.board = new ChessBoard();
         this.board.resetBoard();
+        this.isGameOver = false;
+    }
+
+
+    public void setGameOver(boolean gameOver) {
+        this.isGameOver = gameOver;
     }
 
     private Collection<ChessPosition> getEnemyPositions(TeamColor enemyColor) {
-
         Collection<ChessPosition> enemyPos = new ArrayList<>();
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
@@ -44,6 +50,7 @@ public class ChessGame {
     /**
      * @return Which team's turn it is
      */
+
     public TeamColor getTeamTurn() {
         return this.teamTurn;
     }
