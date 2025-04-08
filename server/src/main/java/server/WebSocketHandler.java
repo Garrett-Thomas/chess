@@ -9,11 +9,14 @@ import dao.SQLGameDAO;
 import dao.SQLUserDAO;
 import dataaccess.*;
 import model.GameData;
-import org.eclipse.jetty.websocket.api.*;
-import org.eclipse.jetty.websocket.api.annotations.*;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+
 import utils.GsonParent;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
@@ -34,35 +37,52 @@ public class WebSocketHandler {
     private final static ConnectionManager connections = new ConnectionManager();
     private final static Gson gson = GsonParent.getInstance();
 
-    private GameData getGameByID(Integer gameID) throws RuntimeException {
+    private GameData getGameByID(Integer gameID) throws DataAccessException {
         var gameList = gameDAO.getGames();
         for (var game : gameList) {
             if (game.gameID() == gameID) {
                 return game;
             }
         }
-        throw new RuntimeException("No game exists with that ID");
+        throw new DataAccessException("No game exists with that ID");
     }
 
     @OnWebSocketMessage
     public void onMessage(Session user, String message) throws IOException {
-        UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-        var username = authDAO.getUsername(command.getAuthToken());
-        var gameID = command.getGameID();
-        var game = getGameByID(gameID);
 
-        switch (command.getCommandType()) {
+        try {
+            UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+            var username = authDAO.getUsername(command.getAuthToken());
+            var gameID = command.getGameID();
+            var game = getGameByID(gameID);
 
-            // Implied that the client has already joined a game via http so just need to find user using token
-            case CONNECT -> {
-                user.getRemote().sendString(new Gson().toJson(new LoadGameMessage(LOAD_GAME, new Gson().toJson(game))));
-                var sockConnection = new SockConnection(username, user);
-                connections.addConnection(game.gameID(), sockConnection);
-            }
+            switch (command.getCommandType()) {
+
+                // Implied that the client has already joined a game via http so just need to find user using token
+                case CONNECT -> {
+                    user.getRemote().sendString(new Gson().toJson(new LoadGameMessage(LOAD_GAME, new Gson().toJson(game))));
+                    var sockConnection = new SockConnection(username, user);
+                    connections.addConnection(game.gameID(), sockConnection);
+
+                    String colorOrObserver = "";
+                    if (Objects.equals(game.whiteUsername(), username)) {
+                        colorOrObserver = "White";
+                    } else if (Objects.equals(game.blackUsername(), username)) {
+                        colorOrObserver = "Black";
+                    } else {
+                        colorOrObserver = "an observer";
+                    }
+
+                    String notify = String.format("%s joined as %s", username, colorOrObserver);
+
+                    String notification = gson.toJson(new NotificationMessage(notify));
+
+                    connections.broadcast(Collections.singleton(username), gameID, notification);
+
+                }
 
 
-            case MAKE_MOVE -> {
-                try {
+                case MAKE_MOVE -> {
                     var moveCommand = GsonParent.getInstance().fromJson(message, MakeMoveCommand.class);
                     ChessGame.TeamColor teamColor = null;
 
@@ -94,32 +114,37 @@ public class WebSocketHandler {
                     }
 
 
-                    // Add logic to check for checkmate, stalemate etc
                     chessGame.makeMove(moveCommand.getMove());
 
-                    var updatedGame = new GameData(gameID, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), chessGame);
+                    String note = null;
+                    if (chessGame.isInCheck(ChessGame.TeamColor.BLACK) || chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
+                        note = "Game in check";
+                    }
 
+                    if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) || chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                        note = "Game in checkmate";
+                        chessGame.setGameOver(true);
+                    }
+                    if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE) || chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                        note = "Game in stalemate";
+                        chessGame.setGameOver(true);
+                    }
+
+                    var updatedGame = new GameData(gameID, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), chessGame);
                     gameDAO.updateGame(updatedGame, gameID);
 
                     String loadGame = new Gson().toJson(new LoadGameMessage(LOAD_GAME, gson.toJson(updatedGame)));
-
                     connections.broadcast(null, gameID, loadGame);
 
-                    String notify = String.format("Player %s moved a piece!", username);
+                    String notify = String.format("Player %s made this move: %s!", username, moveCommand.getMove().toString());
+                    connections.broadcast(Collections.singleton(username), gameID, gson.toJson(new NotificationMessage(notify)));
 
-                    connections.broadcast(Collections.singleton(username), gameID, gson.toJson(new NotificationMessage(NOTIFICATION, notify)));
+                    if (note != null) {
+                        connections.broadcast(null, gameID, note);
+                    }
 
-                } catch (InvalidMoveException e) {
-                    throw new RuntimeException(e);
                 }
-                // If the db update fails
-                catch (ServiceException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-            case LEAVE -> {
-                try {
+                case LEAVE -> {
 
                     GameData updatedGame = null;
                     ChessGame.TeamColor leavingColor = null;
@@ -144,40 +169,41 @@ public class WebSocketHandler {
                     }
 
                     String note = String.format("Player %s has left", username);
-                    var notification = gson.toJson(new NotificationMessage(NOTIFICATION, note));
+                    var notification = gson.toJson(new NotificationMessage(note));
                     connections.broadcast(Collections.singleton(username), gameID, notification);
                     connections.disconnect(gameID, username);
                     connections.removeConnection(gameID, username);
-                } catch (ServiceException e) {
-                    System.err.println(e.getMessage());
+
+
                 }
 
-            }
+                case RESIGN -> {
 
-            case RESIGN -> {
-
-                try {
                     var chessGame = game.game();
                     chessGame.setGameOver(true);
                     var updatedGame = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
                     gameDAO.updateGame(updatedGame, gameID);
 
                     String note = String.format("Player %s has resigned", username);
-                    var notification = gson.toJson(new NotificationMessage(NOTIFICATION, note));
+                    var notification = gson.toJson(new NotificationMessage(note));
 
                     connections.broadcast(Collections.singleton(username), gameID, notification);
                     connections.disconnect(gameID, username);
                     connections.removeConnection(gameID, username);
 
-                } catch (ServiceException e) {
-                    System.err.println(e.getMessage());
+
                 }
             }
-        }
-    }
 
-    @OnWebSocketError
-    public void onError(Session session, Throwable error) {
-        System.out.printf("%s %s", session.getProtocolVersion(), error.toString());
+        } catch (InvalidMoveException | DataAccessException | ServiceException e) {
+
+            String err = "Error: " + e.getMessage();
+
+            String msg = gson.toJson(new ErrorMessage(err));
+            user.getRemote().sendString(msg);
+
+        } catch (RuntimeException e) {
+            System.err.println(e.getMessage());
+        }
     }
 }
