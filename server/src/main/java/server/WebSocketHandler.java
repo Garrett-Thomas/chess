@@ -53,6 +53,9 @@ public class WebSocketHandler {
         try {
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
             var username = authDAO.getUsername(command.getAuthToken());
+            if(username == null){
+               throw new ServiceException(401, "Bad token");
+            }
             var gameID = command.getGameID();
             var game = getGameByID(gameID);
 
