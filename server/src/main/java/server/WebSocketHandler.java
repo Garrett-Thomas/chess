@@ -148,9 +148,11 @@ public class WebSocketHandler {
 
                 }
                 case LEAVE -> {
+                    if (Objects.equals(game.blackUsername(), username) || Objects.equals(game.whiteUsername(), username)) {
+                        var updatedGame = removePlayer(game, username, false);
+                        gameDAO.updateGame(updatedGame, gameID);
+                    }
 
-                    var updatedGame = removePlayer(game, username, false);
-                    gameDAO.updateGame(updatedGame, gameID);
                     String note = String.format("Player %s has left", username);
                     var notification = gson.toJson(new NotificationMessage(note));
                     connections.broadcast(Collections.singleton(username), gameID, notification);
