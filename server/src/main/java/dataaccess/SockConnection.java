@@ -2,5 +2,5 @@ package dataaccess;
 
 import org.eclipse.jetty.websocket.api.Session;
 
-public record Connection(String name, Session session) {
+public record SockConnection(String name, Session session) {
 }

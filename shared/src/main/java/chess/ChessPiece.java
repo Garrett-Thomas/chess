@@ -14,6 +14,7 @@ public class ChessPiece {
     private PieceType type;
     private PieceMovesCalculator movesCalc;
 
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;

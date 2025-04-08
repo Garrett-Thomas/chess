@@ -10,14 +10,16 @@ import java.util.Objects;
  */
 public class ChessMove {
 
-    private ChessPosition startPos;
-    private ChessPosition endPos;
+    private ChessPosition startPosition;
+    private ChessPosition endPosition;
     private ChessPiece.PieceType promotionPiece;
+
+
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
-        this.startPos = startPosition;
-        this.endPos = endPosition;
+        this.startPosition = startPosition;
+        this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
 
     }
@@ -26,19 +28,19 @@ public class ChessMove {
      * @return ChessPosition of starting location
      */
     public ChessPosition getStartPosition() {
-        return this.startPos;
+        return this.startPosition;
     }
 
     /**
      * @return ChessPosition of ending location
      */
     public ChessPosition getEndPosition() {
-        return this.endPos;
+        return this.endPosition;
     }
 
     @Override
-    public String toString(){
-        return String.format("(%d, %d) -> (%d, %d)", startPos.getRow(), startPos.getColumn(), endPos.getRow(), endPos.getColumn());
+    public String toString() {
+        return String.format("(%d, %d) -> (%d, %d)", startPosition.getRow(), startPosition.getColumn(), endPosition.getRow(), endPosition.getColumn());
     }
 
     @Override
@@ -47,12 +49,12 @@ public class ChessMove {
             return false;
         }
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(startPos, chessMove.startPos) && Objects.equals(endPos, chessMove.endPos) && promotionPiece == chessMove.promotionPiece;
+        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startPos, endPos, promotionPiece);
+        return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 
     /**
