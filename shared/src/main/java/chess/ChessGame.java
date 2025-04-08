@@ -32,6 +32,10 @@ public class ChessGame {
         this.isGameOver = gameOver;
     }
 
+    public boolean isGameOver() {
+        return this.isGameOver;
+    }
+
     private Collection<ChessPosition> getEnemyPositions(TeamColor enemyColor) {
         Collection<ChessPosition> enemyPos = new ArrayList<>();
         for (int i = 1; i < 9; i++) {

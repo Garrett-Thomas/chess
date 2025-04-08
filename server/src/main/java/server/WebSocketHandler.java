@@ -55,7 +55,6 @@ public class WebSocketHandler {
 
             // Implied that the client has already joined a game via http so just need to find user using token
             case CONNECT -> {
-                var game = getGameByID(gameID);
                 user.getRemote().sendString(new Gson().toJson(new LoadGameMessage(LOAD_GAME, new Gson().toJson(game))));
                 var sockConnection = new SockConnection(username, user);
                 connections.addConnection(game.gameID(), sockConnection);
@@ -63,29 +62,31 @@ public class WebSocketHandler {
 
 
             case MAKE_MOVE -> {
-
-
-                var moveCommand = GsonParent.getInstance().fromJson(message, MakeMoveCommand.class);
-                ChessGame.TeamColor teamColor = null;
-
-                GameData gameData = null;
-                ChessGame chessGame = null;
-                chessGame = game.game();
-                gameData = game;
-                if (game.blackUsername() == null || game.whiteUsername() == null) {
-                    throw new RuntimeException("Game has not started yet");
-                }
-                if (game.blackUsername().equals(username)) {
-                    teamColor = ChessGame.TeamColor.BLACK;
-                } else if (game.whiteUsername().equals(username)) {
-                    teamColor = ChessGame.TeamColor.WHITE;
-                }
-
-                if (chessGame == null) {
-                    throw new IOException("Can't find game");
-                }
-
                 try {
+                    var moveCommand = GsonParent.getInstance().fromJson(message, MakeMoveCommand.class);
+                    ChessGame.TeamColor teamColor = null;
+
+                    GameData gameData = null;
+                    ChessGame chessGame = null;
+                    chessGame = game.game();
+                    gameData = game;
+
+                    if (chessGame.isGameOver()) {
+                        throw new InvalidMoveException("Cannot make move while game is over");
+                    }
+
+                    if (game.blackUsername() == null || game.whiteUsername() == null) {
+                        throw new RuntimeException("Game has not started yet");
+                    }
+                    if (game.blackUsername().equals(username)) {
+                        teamColor = ChessGame.TeamColor.BLACK;
+                    } else if (game.whiteUsername().equals(username)) {
+                        teamColor = ChessGame.TeamColor.WHITE;
+                    }
+
+                    if (chessGame == null) {
+                        throw new IOException("Can't find game");
+                    }
 
 
                     if (chessGame.getTeamTurn() != teamColor) {
@@ -156,7 +157,6 @@ public class WebSocketHandler {
             case RESIGN -> {
 
                 try {
-                    var game = getGameByID(gameID);
                     var chessGame = game.game();
                     chessGame.setGameOver(true);
                     var updatedGame = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
@@ -174,9 +174,10 @@ public class WebSocketHandler {
                 }
             }
         }
-
-        @OnWebSocketError
-        public void onError (Session session, Throwable error){
-            System.out.printf("%s %s", session.getProtocolVersion(), error.toString());
-        }
     }
+
+    @OnWebSocketError
+    public void onError(Session session, Throwable error) {
+        System.out.printf("%s %s", session.getProtocolVersion(), error.toString());
+    }
+}
