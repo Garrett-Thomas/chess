@@ -190,7 +190,7 @@ public class WebSocketHandler {
                     String note = String.format("Player %s has resigned", username);
                     var notification = gson.toJson(new NotificationMessage(note));
 
-                    connections.broadcast(Collections.singleton(username), gameID, notification);
+                    connections.broadcast(null, gameID, notification);
                     connections.disconnect(gameID, username);
                     connections.removeConnection(gameID, username);
 
