@@ -149,28 +149,8 @@ public class WebSocketHandler {
                 }
                 case LEAVE -> {
 
-                    GameData updatedGame = null;
-                    ChessGame.TeamColor leavingColor = null;
-
-                    if (Objects.equals(game.whiteUsername(), username)) {
-                        leavingColor = ChessGame.TeamColor.WHITE;
-                    }
-                    if (Objects.equals(game.blackUsername(), username)) {
-                        leavingColor = ChessGame.TeamColor.BLACK;
-                    }
-
-                    if (leavingColor != null) {
-                        switch (leavingColor) {
-                            case WHITE -> {
-                                updatedGame = new GameData(gameID, null, game.blackUsername(), game.gameName(), game.game());
-                            }
-                            case BLACK -> {
-                                updatedGame = new GameData(gameID, game.whiteUsername(), null, game.gameName(), game.game());
-                            }
-                        }
-                        gameDAO.updateGame(updatedGame, gameID);
-                    }
-
+                    var updatedGame = removePlayer(game, username, false);
+                    gameDAO.updateGame(updatedGame, gameID);
                     String note = String.format("Player %s has left", username);
                     var notification = gson.toJson(new NotificationMessage(note));
                     connections.broadcast(Collections.singleton(username), gameID, notification);
@@ -182,13 +162,18 @@ public class WebSocketHandler {
 
                 case RESIGN -> {
 
-                    var chessGame = game.game();
-                    chessGame.setGameOver(true);
-                    var updatedGame = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
-                    gameDAO.updateGame(updatedGame, gameID);
-                    if (game.whiteUsername() != username && game.blackUsername() != username) {
+                    if (!Objects.equals(game.whiteUsername(), username) && !Objects.equals(game.blackUsername(), username)) {
                         throw new ServiceException(401, "Cannot resign while an observer");
                     }
+
+                    // Implies that someone has already resigned
+                    if (game.whiteUsername() == null || game.blackUsername() == null) {
+                        throw new ServiceException(400, "Cannot resign");
+                    }
+
+                    var updatedGame = removePlayer(game, username, true);
+                    gameDAO.updateGame(updatedGame, gameID);
+
                     String note = String.format("Player %s has resigned", username);
                     var notification = gson.toJson(new NotificationMessage(note));
 
@@ -209,6 +194,38 @@ public class WebSocketHandler {
 
         } catch (RuntimeException e) {
             System.err.println(e.getMessage());
+        }
+    }
+
+    public GameData removePlayer(GameData game, String username, boolean isOver) throws DataAccessException {
+        GameData updatedGame = null;
+        ChessGame.TeamColor leavingColor = null;
+        var chessGame = game.game();
+
+        if (isOver) {
+            chessGame.setGameOver(true);
+        }
+
+        if (Objects.equals(game.whiteUsername(), username)) {
+            leavingColor = ChessGame.TeamColor.WHITE;
+        }
+        if (Objects.equals(game.blackUsername(), username)) {
+            leavingColor = ChessGame.TeamColor.BLACK;
+        }
+
+        if (leavingColor != null) {
+            switch (leavingColor) {
+                case WHITE -> {
+                    updatedGame = new GameData(game.gameID(), null, game.blackUsername(), game.gameName(), game.game());
+                }
+                case BLACK -> {
+                    updatedGame = new GameData(game.gameID(), game.whiteUsername(), null, game.gameName(), game.game());
+                }
+            }
+
+            return updatedGame;
+        } else {
+            throw new DataAccessException("Cannot remove player " + username);
         }
     }
 }
