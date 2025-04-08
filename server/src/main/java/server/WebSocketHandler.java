@@ -186,7 +186,9 @@ public class WebSocketHandler {
                     chessGame.setGameOver(true);
                     var updatedGame = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
                     gameDAO.updateGame(updatedGame, gameID);
-
+                    if (game.whiteUsername() != username && game.blackUsername() != username) {
+                        throw new ServiceException(401, "Cannot resign while an observer");
+                    }
                     String note = String.format("Player %s has resigned", username);
                     var notification = gson.toJson(new NotificationMessage(note));
 
