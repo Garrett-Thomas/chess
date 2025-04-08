@@ -16,6 +16,19 @@ public class ConnectionManager {
 
     private final HashMap<Integer, ArrayList<SockConnection>> connMap = new HashMap<>();
 
+    public void addConnection(Integer gameID, SockConnection sockConnection) {
+        var connList = connMap.get(gameID);
+        connList.add(sockConnection);
+        connMap.put(gameID, connList);
+    }
+
+    public void removeConnection(Integer gameID, SockConnection sockConnection){
+
+        var connList = connMap.get(gameID);
+        connList.add(sockConnection);
+        connMap.put(gameID, connList);
+
+    }
     public void broadcast(Set<String> toExclude, Integer gameID, String msg) throws IOException {
         ArrayList<SockConnection> removeList = new ArrayList<>();
         var connList = connMap.get(gameID);

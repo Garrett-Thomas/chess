@@ -3,12 +3,14 @@ package server;
 import chess.ChessGame;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
+import dao.GameDAO;
 import dao.SQLAuthDAO;
 import dao.SQLGameDAO;
 import dao.SQLUserDAO;
 import dataaccess.ConnectionManager;
 import dataaccess.DatabaseManager;
 import dataaccess.DbUtils;
+import dataaccess.ServiceException;
 import org.eclipse.jetty.websocket.api.*;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import utils.GsonParent;
@@ -31,6 +33,9 @@ public class WebSocketHandler {
     private static SQLGameDAO gameDAO = SQLGameDAO.getInstance();
     private static SQLAuthDAO authDAO = SQLAuthDAO.getInstance();
     private final static ConnectionManager connections = new ConnectionManager();
+    private final static Gson gson = GsonParent.getInstance();
+
+
 
     @OnWebSocketMessage
     public void onMessage(Session user, String message) throws IOException {
@@ -41,6 +46,7 @@ public class WebSocketHandler {
             case CONNECT -> {
 //                String username = authDAO.getUsername(command.getAuthToken());
 //                var userData = userDAO.getUser(username);
+                connections.
                 var gameList = gameDAO.getGames();
                 for (var game : gameList) {
                     // Want to "join" this game
@@ -90,11 +96,15 @@ public class WebSocketHandler {
 
 
                     chessGame.makeMove(moveCommand.getMove());
-                    String loadGame = new Gson().toJson(new LoadGameMessage(LOAD_GAME, new Gson().toJson(chessGame)));
+
+
+                    var gameJson = gson.toJson(chessGame);
+//                    gameDAO.updateGame(gameJson, gameID);
+                    String loadGame = new Gson().toJson(new LoadGameMessage(LOAD_GAME, gameJson));
                     connections.broadcast(null, gameID, loadGame);
 
                     String notify = String.format("Player %s moved a piece!", username);
-                    connections.broadcast(Collections.singleton(username), gameID, new Gson().toJson(new NotificationMessage(NOTIFICATION, notify)));
+                    connections.broadcast(Collections.singleton(username), gameID, gson.toJson(new NotificationMessage(NOTIFICATION, notify)));
                 } catch (InvalidMoveException e) {
                     throw new RuntimeException(e);
                 }

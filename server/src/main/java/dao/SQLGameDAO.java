@@ -46,7 +46,8 @@ public class SQLGameDAO implements GameDAO {
     }
 
 
-    public void updateGame(ChessGame game, int gameId) throws ServiceException {
+    public void updateGame(String game, int gameId) throws ServiceException {
+
         DbUtils.executeUpdate(UPDATE_GAME_STRING, game, gameId);
     }
 
@@ -129,7 +130,7 @@ public class SQLGameDAO implements GameDAO {
             throw new ServiceException(400, "playerColor not equal to black or white");
         }
 
-        var gameJson = new Gson().toJson(updatedGame);
+        var gameJson = gson.toJson(updatedGame);
         DbUtils.executeUpdate(UPDATE_GAME_STRING, gameJson, gameID);
     }
 
