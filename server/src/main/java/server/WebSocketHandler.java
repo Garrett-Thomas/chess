@@ -53,8 +53,8 @@ public class WebSocketHandler {
         try {
             UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
             var username = authDAO.getUsername(command.getAuthToken());
-            if(username == null){
-               throw new ServiceException(401, "Bad token");
+            if (username == null) {
+                throw new ServiceException(401, "Bad token");
             }
             var gameID = command.getGameID();
             var game = getGameByID(gameID);
@@ -113,7 +113,7 @@ public class WebSocketHandler {
 
 
                     if (chessGame.getTeamTurn() != teamColor) {
-                        throw new RuntimeException("Wrong team turn");
+                        throw new InvalidMoveException("Wrong team turn");
                     }
 
 
@@ -132,7 +132,6 @@ public class WebSocketHandler {
                         note = "Game in stalemate";
                         chessGame.setGameOver(true);
                     }
-
                     var updatedGame = new GameData(gameID, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), chessGame);
                     gameDAO.updateGame(updatedGame, gameID);
 
@@ -142,8 +141,9 @@ public class WebSocketHandler {
                     String notify = String.format("Player %s made this move: %s!", username, moveCommand.getMove().toString());
                     connections.broadcast(Collections.singleton(username), gameID, gson.toJson(new NotificationMessage(notify)));
 
+
                     if (note != null) {
-                        connections.broadcast(null, gameID, note);
+                        connections.broadcast(null, gameID, gson.toJson(new NotificationMessage(note)));
                     }
 
                 }
@@ -198,7 +198,7 @@ public class WebSocketHandler {
                 }
             }
 
-        } catch (InvalidMoveException | DataAccessException | ServiceException e) {
+        } catch (IOException | InvalidMoveException | DataAccessException | ServiceException e) {
 
             String err = "Error: " + e.getMessage();
 
