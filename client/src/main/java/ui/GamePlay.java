@@ -4,7 +4,9 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import server.ChessClient;
 import server.ServerFacade;
+import websocket.commands.UserGameCommand;
 
 import java.util.ArrayList;
 
@@ -13,22 +15,45 @@ public class GamePlay {
     private static ChessGame game = null;
     private static ArrayList<String> header = genHeader();
     private static final int asciiA = 97;
+    private static final String OBSERVER_HELP = """
+            help -> this message
+            legmove -> [pos] get the legal moves for a piece at position pos
+            leave -> leave game
+            redraw -> redraw board
+            """;
+    private static final String PLAYER_HELP_MESSAGE = """
+            move -> [from] [to] e.g. a1 a2 
+            resign -> resign game
+            """;
 
     public static void eval(String cmd, ArrayList<String> params) throws UIException {
-        switch (cmd) {
-            case "help" -> printHelp();
-            case "move" -> executeMove(params);
-            case "legMove" -> legalMoves(params);
-            default -> drawBoard();
+        if (ChessClient.clientType == ChessClient.ClientType.OBSERVER) {
+            switch (cmd) {
+                case "legmove" -> legalMoves(params);
+                case "redraw" -> drawBoard();
+                case "leave" -> leaveGame();
+                default -> printHelp();
+            }
+        } else {
+            switch (cmd) {
+                case "move" -> executeMove(params);
+                case "legmove" -> legalMoves(params);
+                case "redraw" -> drawBoard();
+                case "leave" -> leaveGame();
+                case "resign" -> resignGame();
+                default -> printHelp();
+            }
+
         }
     }
 
     private static void printHelp() {
-        System.out.println("""
-                help -> this message
-                move -> [from] [to] e.g. A6 B5
-                legMove -> [pos] get the legal moves for a piece at position pos
-                """);
+        if (ChessClient.clientType == ChessClient.ClientType.PLAYER) {
+            System.out.println(OBSERVER_HELP + PLAYER_HELP_MESSAGE);
+        } else {
+
+            System.out.println(OBSERVER_HELP);
+        }
     }
 
     public static void legalMoves(ArrayList<String> params) throws UIException {
@@ -70,8 +95,16 @@ public class GamePlay {
         printBoard(gameBoard, LocalStorage.getTeamColor());
     }
 
+    private static void leaveGame() {
+        ServerFacade.leaveGame(UserGameCommand.CommandType.LEAVE);
+    }
 
-    private static ChessPosition parseStringToPosition(String pos, ChessGame.TeamColor playerColor) {
+    private static void resignGame() {
+        ServerFacade.leaveGame(UserGameCommand.CommandType.RESIGN);
+    }
+
+
+    public static ChessPosition parseStringToPosition(String pos, ChessGame.TeamColor playerColor) {
 
         // If white then a1 is really board[0][7]
         // if black then a1 is really board[7][0]

@@ -5,6 +5,7 @@ import passoff.server.TestServerFacade;
 import ui.LocalStorage;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 import java.util.HashMap;
 
@@ -42,5 +43,16 @@ public class ServerFacade extends TestServerFacade {
         webSocketFacade.sendMessage(makeMove);
 
     }
+
+    public static void leaveGame(UserGameCommand.CommandType type) {
+        var authToken = LocalStorage.getToken();
+        var gameID = LocalStorage.getCurrGameID();
+        var leaveCommand = new UserGameCommand(type, authToken, gameID);
+        webSocketFacade.sendMessage(leaveCommand);
+        LocalStorage.setCurrGameID(null);
+        ChessClient.state = ChessClient.ProgramState.POST_LOGIN;
+        ChessClient.clientType = ChessClient.ClientType.NONE;
+    }
+
 
 }
