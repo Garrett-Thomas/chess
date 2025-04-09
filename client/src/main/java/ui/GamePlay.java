@@ -13,10 +13,15 @@ public class GamePlay {
 
     public static void eval(String cmd, ArrayList<String> params) {
         switch (cmd) {
+            case "help" -> printHelp();
             default -> drawBoard();
         }
     }
-
+    private static void printHelp(){
+        System.out.println("""
+                help asldkfjasdf
+                """);
+    }
     private static ArrayList<String> genHeader() {
         int a = 97;
         ArrayList<String> header = new ArrayList<String>();

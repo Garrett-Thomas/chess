@@ -8,16 +8,24 @@ import java.util.Scanner;
 public class ChessClient {
 
 
-    public static enum ProgramState {
+    public enum ProgramState {
         PRE_LOGIN,
         POST_LOGIN,
         GAMEPLAY;
     }
 
+    public enum ClientType {
+        PLAYER,
+        OBSERVER,
+        NONE
+    }
+
     public static ProgramState state;
+    public static ClientType clientType;
 
     public ChessClient() {
         state = ProgramState.PRE_LOGIN;
+        clientType = ClientType.NONE;
     }
 
 
@@ -31,29 +39,22 @@ public class ChessClient {
             try {
                 System.out.print(">> " + EscapeSequences.moveCursorToLocation(3, 0));
 
-                if (state == ProgramState.GAMEPLAY) {
-                    GamePlay.eval("", null);
-                    System.exit(1);
-                } else {
+                var input = scanner.nextLine();
 
-                    var input = scanner.nextLine();
-
-                    var parsedInput = StringUtils.parseCommand(input);
-                    var cmd = StringUtils.getCommand(parsedInput);
-                    var params = parsedInput.size() > 1 ? StringUtils.getParameters(parsedInput) : new ArrayList<String>();
-                    if (cmd.equals("quit")) {
-                        System.exit(0);
-                    }
-                    if (state == ProgramState.PRE_LOGIN) {
-                        PreLogin.eval(cmd, params);
-                    } else if (state == ProgramState.POST_LOGIN) {
-                        PostLogin.eval(cmd, params);
-                    }
+                var parsedInput = StringUtils.parseCommand(input);
+                var cmd = StringUtils.getCommand(parsedInput);
+                var params = parsedInput.size() > 1 ? StringUtils.getParameters(parsedInput) : new ArrayList<String>();
+                if (cmd.equals("quit")) {
+                    System.exit(0);
                 }
-//                else if (state == ProgramState.GAMEPLAY) {
-//                    GamePlay.eval(cmd, params);
-//
-//                }
+                if (state == ProgramState.PRE_LOGIN) {
+                    PreLogin.eval(cmd, params);
+                } else if (state == ProgramState.POST_LOGIN) {
+                    PostLogin.eval(cmd, params);
+                } else if (state == ProgramState.GAMEPLAY) {
+                    GamePlay.eval(cmd, params);
+
+                }
 
             } catch (UIException e) {
                 System.out.println(StringUtils.getNegativeString(e.getMessage()));

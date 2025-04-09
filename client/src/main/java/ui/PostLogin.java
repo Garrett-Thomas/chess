@@ -115,7 +115,8 @@ public class PostLogin {
 
         LocalStorage.setTeamColor(playerColor);
         GamePlay.drawBoard();
-//        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
+        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
+        ChessClient.clientType = ChessClient.ClientType.PLAYER;
 
     }
 
@@ -131,7 +132,8 @@ public class PostLogin {
 
         System.out.println("Observing game " + params.getFirst());
         LocalStorage.setTeamColor(ChessGame.TeamColor.WHITE);
-//        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
+        ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
+        ChessClient.clientType = ChessClient.ClientType.PLAYER;
         GamePlay.drawBoard();
     }
 
