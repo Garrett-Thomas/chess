@@ -5,6 +5,7 @@ import dataaccess.DbUtils;
 import dataaccess.ServiceException;
 import model.ResponseSuper;
 import spark.*;
+
 import static spark.Spark.webSocket;
 
 public class Server {
@@ -32,12 +33,6 @@ public class Server {
             res.body(new Gson().toJson(new ResponseSuper(se.getResponse())));
         });
 
-//        Spark.before("*", (Request req, Response res)->{
-//            if(!req.headers("Sec-WebSocket-Extensions").isEmpty()){
-//                System.out.println("ooh ahh");
-//            }
-//        });
-//
         // Crucial that this is placed before the after middleware
         // I suspect that it tries to apply the middleware to the ws connection
         // and weird things happen or tries treating the /ws route as http

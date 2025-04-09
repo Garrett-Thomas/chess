@@ -34,7 +34,6 @@ public class GamePlayTest {
     @Test
     public void highlightMoves() throws UIException {
 
-//        LocalStorage.setTeamColor(ChessGame.TeamColor.WHITE);
         ArrayList<String> params = new ArrayList<>();
         params.add("h5");
 
@@ -48,20 +47,6 @@ public class GamePlayTest {
 
     @Test
     public void testParsePosition() {
-        /**
-         * For a pawn at a2 of white team
-         * This is at board[0][6] and we know that to get the position
-         * a -> col 2 -> row
-         * in this case a -> 8 2 -> 6
-         public ChessPiece getPiece(ChessPosition position) {
-         return this.board[position.getColumn() - 1][8 - position.getRow()];
-         }
-         *
-         * for h7 want chess position of
-         *  pos(7, 1)
-         *
-         *
-         */
         var tempBoard = new ChessGame();
         String pos1 = "c2";
         var res = GamePlay.parseStringToPosition(pos1, ChessGame.TeamColor.WHITE);

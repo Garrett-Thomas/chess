@@ -35,30 +35,6 @@ public class ConnectionManager {
     }
 
 
-//    public void disconnectBySession(Session session) {
-//        try {
-//            ArrayList<SockConnection> updatedSockList = new ArrayList<>();
-//
-//            for (var sockList : connMap.values()) {
-//                SockConnection toRemove = null;
-//                for (var sockConn : sockList) {
-//                    if (sockConn.session().equals(session)) {
-//                        toRemove = sockConn;
-//                        updatedSockList.addAll(sockList);
-//                        sockConn.session().close();
-//                        break;
-//                    }
-//                }
-//                if (toRemove != null) {
-//                    break;
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
     public void disconnect(Integer gameID, String username) {
         try {
             var userConn = getUserByName(gameID, username);
