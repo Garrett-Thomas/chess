@@ -56,8 +56,6 @@ public class ChessClient {
 
                 }
 
-            } catch (UIException e) {
-                System.out.println(StringUtils.getNegativeString(e.getMessage()));
             } catch (Exception e) {
 
                 System.out.println(StringUtils.getNegativeString(e.getMessage()));

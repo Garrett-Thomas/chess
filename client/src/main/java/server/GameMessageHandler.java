@@ -3,8 +3,11 @@ package server;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import ui.GamePlay;
+import ui.StringUtils;
 import utils.GsonParent;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 public class GameMessageHandler {
@@ -19,15 +22,20 @@ public class GameMessageHandler {
                 var gameCommand = gson.fromJson(msg, LoadGameMessage.class);
                 GamePlay.setGame(gson.fromJson(gameCommand.getGame(), ChessGame.class));
                 GamePlay.drawBoard();
-//                System.out.println("loading game...");
-            }
-            case NOTIFICATION -> {
-                System.out.println("Notification");
-            }
-            case ERROR -> {
-                System.out.println("Error");
             }
 
+            case NOTIFICATION -> {
+
+                var note = gson.fromJson(msg, NotificationMessage.class);
+                var styledNote = StringUtils.getPositiveString(note.message);
+                System.out.println(styledNote);
+            }
+
+            case ERROR -> {
+                var error = gson.fromJson(msg, ErrorMessage.class);
+                var styledError = StringUtils.getNegativeString(error.errorMessage);
+                System.out.println(styledError);
+            }
 
         }
 

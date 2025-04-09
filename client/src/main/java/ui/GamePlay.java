@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
@@ -10,19 +11,57 @@ public class GamePlay {
 
     private static ChessGame game;
     private static ArrayList<String> header = genHeader();
+    private static final int asciiA = 97;
 
     public static void eval(String cmd, ArrayList<String> params) {
         switch (cmd) {
             case "help" -> printHelp();
+            case "move" -> executeMove(params);
             default -> drawBoard();
         }
     }
 
     private static void printHelp() {
         System.out.println("""
-                help asldkfjasdf
+                help -> this message
+                move -> [from] [to] e.g. A6 B5
                 """);
     }
+
+    private static ChessPosition parseStringToPosition(String pos, ChessGame.TeamColor playerColor) {
+        int col = (int) pos.toCharArray()[0] - asciiA + 1;
+        int row = Integer.valueOf(pos.toCharArray()[1] + "");
+
+        // Must invert coordinates
+        if (playerColor == ChessGame.TeamColor.BLACK) {
+            col = 9 - col;
+            row = 9 - row;
+        }
+
+        return new ChessPosition(row, col);
+
+    }
+
+    private static ChessMove parseStringsToChessMove(String from, String to, ChessPiece.PieceType promotionPiece, ChessGame.TeamColor playerColor) {
+        var fromPos = parseStringToPosition(from, playerColor);
+        var toPos = parseStringToPosition(to, playerColor);
+
+        return new ChessMove(fromPos, toPos, promotionPiece);
+    }
+
+    private static void executeMove(ArrayList<String> move) {
+        if (move.size() < 2 || move.size() > 3) {
+            throw new RuntimeException("Invalid Chess Move");
+        }
+
+        String from = move.get(0).toLowerCase();
+        String to = move.get(1).toLowerCase();
+
+        // TODO: third parameter can be the promotion piece
+        var parsedMove = parseStringsToChessMove(from, to, null, LocalStorage.getTeamColor());
+
+    }
+
 
     public static void setGame(ChessGame game) {
         GamePlay.game = game;
