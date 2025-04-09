@@ -24,6 +24,9 @@ public class StringUtils {
         return new ArrayList<String>(input.subList(1, input.size()));
     }
 
+    public static String getHighlightedBlock(String block){
+        return EscapeSequences.SET_BG_COLOR_GREEN + block + EscapeSequences.RESET_BG_COLOR;
+    }
     public static String getPositiveString(String msg){
         return EscapeSequences.SET_TEXT_COLOR_GREEN + msg + EscapeSequences.RESET_TEXT_COLOR;
     }

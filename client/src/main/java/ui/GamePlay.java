@@ -31,8 +31,7 @@ public class GamePlay {
                 """);
     }
 
-
-    private static void legalMoves(ArrayList<String> params) throws UIException {
+    public static void legalMoves(ArrayList<String> params) throws UIException {
         if (params.size() != 1) {
             throw new UIException("Bad position");
         }
@@ -40,19 +39,43 @@ public class GamePlay {
         var pos = params.get(0).toLowerCase();
         var posParsed = parseStringToPosition(pos, LocalStorage.getTeamColor());
         var allMoves = game.validMoves(posParsed);
+        var gameBoard = makeBoard(true);
 
+        for (int i = 8; i > 0; i--) {
+            for (int j = 1; j < 9; j++) {
+                var currPos = new ChessPosition(i, j);
+                for (var move : allMoves) {
+                    if (currPos.equals(move.getEndPosition())) {
+                        var piece = game.getBoard().getPiece(currPos);
+                        String block = getString(i, j, piece, false);
+                        block = StringUtils.getHighlightedBlock(block);
+                        gameBoard.get(i).set(j, block);
+                    }
 
+                }
+
+            }
+
+        }
+        gameBoard.addFirst(header);
+        gameBoard.add(header);
+
+        printBoard(gameBoard, LocalStorage.getTeamColor());
     }
 
 
     private static ChessPosition parseStringToPosition(String pos, ChessGame.TeamColor playerColor) {
+
+        // If white then a1 is really board[0][7]
+        // if black then a1 is really board[7][0]
+        // if white then d3 is really board[3][3]
+        // if black then d3 is really board[5][3]
         int col = (int) pos.toCharArray()[0] - asciiA + 1;
         int row = Integer.valueOf(pos.toCharArray()[1] + "");
 
         // Must invert coordinates
         if (playerColor == ChessGame.TeamColor.BLACK) {
             col = 9 - col;
-            row = 9 - row;
         }
 
         return new ChessPosition(row, col);
@@ -124,12 +147,11 @@ public class GamePlay {
         return null;
     }
 
-    private static ArrayList<ArrayList<String>> makeBoard() {
+    private static ArrayList<ArrayList<String>> makeBoard(boolean color) {
         var board = game.getBoard();
 
 
         ArrayList<ArrayList<String>> gameBoard = new ArrayList<>();
-        gameBoard.add(header);
         for (int i = 8; i > 0; i--) {
             ArrayList<String> row = new ArrayList<>();
 
@@ -138,7 +160,7 @@ public class GamePlay {
 
             for (int j = 1; j < 9; j++) {
                 var piece = board.getPiece(new ChessPosition(i, j));
-                String block = getString(i, j, piece);
+                String block = getString(i, j, piece, color);
                 row.add(block);
 
             }
@@ -147,15 +169,12 @@ public class GamePlay {
             gameBoard.add(row);
         }
 
-        gameBoard.add(header);
-        return makeBoard();
+        return gameBoard;
     }
 
-    public static void drawBoard() {
+    public static void printBoard(ArrayList<ArrayList<String>> gameBoard, ChessGame.TeamColor color) {
 
-        var gameBoard = makeBoard();
-
-        if (LocalStorage.getTeamColor() == ChessGame.TeamColor.WHITE) {
+        if (color == ChessGame.TeamColor.WHITE) {
             for (ArrayList<String> row : gameBoard) {
                 System.out.println(String.join("", row));
             }
@@ -171,11 +190,24 @@ public class GamePlay {
                 System.out.println(reversedRow);
             }
         }
+
+
     }
 
-    private static String getString(int i, int j, ChessPiece piece) {
+    public static void drawBoard() {
+
+        var gameBoard = makeBoard(true);
+        gameBoard.addFirst(header);
+        gameBoard.add(header);
+        printBoard(gameBoard, LocalStorage.getTeamColor());
+    }
+
+    private static String getString(int i, int j, ChessPiece piece, boolean color) {
         boolean tern = (i % 2 == 0 && j % 2 != 0 || i % 2 != 0 && j % 2 == 0);
-        String block = tern ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
+        String block = "";
+        if (color) {
+            block = tern ? EscapeSequences.SET_BG_COLOR_LIGHT_GREY : EscapeSequences.SET_BG_COLOR_DARK_GREY;
+        }
         if (piece == null) {
             block += EscapeSequences.EMPTY;
         } else {
