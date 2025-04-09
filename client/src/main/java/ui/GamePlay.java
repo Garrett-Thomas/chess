@@ -14,10 +14,11 @@ public class GamePlay {
     private static ArrayList<String> header = genHeader();
     private static final int asciiA = 97;
 
-    public static void eval(String cmd, ArrayList<String> params) {
+    public static void eval(String cmd, ArrayList<String> params) throws UIException {
         switch (cmd) {
             case "help" -> printHelp();
             case "move" -> executeMove(params);
+            case "legMove" -> legalMoves(params);
             default -> drawBoard();
         }
     }
@@ -26,8 +27,23 @@ public class GamePlay {
         System.out.println("""
                 help -> this message
                 move -> [from] [to] e.g. A6 B5
+                legMove -> [pos] get the legal moves for a piece at position pos
                 """);
     }
+
+
+    private static void legalMoves(ArrayList<String> params) throws UIException {
+        if (params.size() != 1) {
+            throw new UIException("Bad position");
+        }
+
+        var pos = params.get(0).toLowerCase();
+        var posParsed = parseStringToPosition(pos, LocalStorage.getTeamColor());
+        var allMoves = game.validMoves(posParsed);
+
+
+    }
+
 
     private static ChessPosition parseStringToPosition(String pos, ChessGame.TeamColor playerColor) {
         int col = (int) pos.toCharArray()[0] - asciiA + 1;
@@ -108,7 +124,7 @@ public class GamePlay {
         return null;
     }
 
-    public static void drawBoard() {
+    private static ArrayList<ArrayList<String>> makeBoard() {
         var board = game.getBoard();
 
 
@@ -119,6 +135,7 @@ public class GamePlay {
 
             String col = EscapeSequences.SET_BG_COLOR_WHITE + " " + (i) + " " + EscapeSequences.RESET_BG_COLOR;
             row.add(col);
+
             for (int j = 1; j < 9; j++) {
                 var piece = board.getPiece(new ChessPosition(i, j));
                 String block = getString(i, j, piece);
@@ -131,6 +148,13 @@ public class GamePlay {
         }
 
         gameBoard.add(header);
+        return makeBoard();
+    }
+
+    public static void drawBoard() {
+
+        var gameBoard = makeBoard();
+
         if (LocalStorage.getTeamColor() == ChessGame.TeamColor.WHITE) {
             for (ArrayList<String> row : gameBoard) {
                 System.out.println(String.join("", row));
