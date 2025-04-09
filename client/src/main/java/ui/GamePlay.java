@@ -14,7 +14,7 @@ public class GamePlay {
 
     private static ChessGame game = null;
     private static ArrayList<String> header = genHeader();
-    private static final int asciiA = 97;
+    private static final int ASCII_A = 97;
     private static final String OBSERVER_HELP = """
             help -> this message
             legmove -> [pos] get the legal moves for a piece at position pos
@@ -110,7 +110,7 @@ public class GamePlay {
         // if black then a1 is really board[7][0]
         // if white then d3 is really board[3][3]
         // if black then d3 is really board[5][3]
-        int col = (int) pos.toCharArray()[0] - asciiA + 1;
+        int col = (int) pos.toCharArray()[0] - ASCII_A + 1;
         int row = Integer.valueOf(pos.toCharArray()[1] + "");
         return new ChessPosition(row, col);
 
