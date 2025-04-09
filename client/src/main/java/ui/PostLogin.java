@@ -140,6 +140,7 @@ public class PostLogin {
         return ("""
                 help -> display this message
                 logout -> logout current user
+                list -> list all games
                 create <GAME_NAME> -> create a game with the given name
                 join <ID> [WHITE|BLACK] -> join game with given id and as given color
                 observe <ID> -> observe game with given id

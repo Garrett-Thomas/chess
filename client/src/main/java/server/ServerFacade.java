@@ -9,7 +9,6 @@ import java.util.HashMap;
 public class ServerFacade extends TestServerFacade {
 
     private static ServerFacade server = null;
-    private static HashMap<String, String> gameNumToID = null;
     private static WebSocketFacade webSocketFacade;
     private static String url;
     private static String port;

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class GamePlay {
 
-    private static ChessGame game = new ChessGame();
+    private static ChessGame game;
     private static ArrayList<String> header = genHeader();
 
     public static void eval(String cmd, ArrayList<String> params) {
@@ -17,11 +17,17 @@ public class GamePlay {
             default -> drawBoard();
         }
     }
-    private static void printHelp(){
+
+    private static void printHelp() {
         System.out.println("""
                 help asldkfjasdf
                 """);
     }
+
+    public static void setGame(ChessGame game) {
+        GamePlay.game = game;
+    }
+
     private static ArrayList<String> genHeader() {
         int a = 97;
         ArrayList<String> header = new ArrayList<String>();
