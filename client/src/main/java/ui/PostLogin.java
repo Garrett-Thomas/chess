@@ -114,10 +114,9 @@ public class PostLogin {
         System.out.println("Successfully joined game");
 
         LocalStorage.setTeamColor(playerColor);
-        GamePlay.drawBoard();
         ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
         ChessClient.clientType = ChessClient.ClientType.PLAYER;
-
+        ServerFacade.connectSocket();
     }
 
     private static void observeGame(ArrayList<String> params) throws Exception {
@@ -134,7 +133,7 @@ public class PostLogin {
         LocalStorage.setTeamColor(ChessGame.TeamColor.WHITE);
         ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
         ChessClient.clientType = ChessClient.ClientType.PLAYER;
-        GamePlay.drawBoard();
+        ServerFacade.connectSocket();
     }
 
     private static String help() {
