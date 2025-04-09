@@ -37,7 +37,9 @@ public class ChessClient {
 
         while (true) {
             try {
-                System.out.print(">> " + EscapeSequences.moveCursorToLocation(3, 0));
+                if (state == ProgramState.PRE_LOGIN || state == ProgramState.POST_LOGIN) {
+                    System.out.print(">> " + EscapeSequences.moveCursorToLocation(3, 0));
+                }
 
                 var input = scanner.nextLine();
 

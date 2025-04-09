@@ -92,15 +92,8 @@ public class PostLogin {
         }
         Integer gameID = LocalStorage.getGame(params.getFirst());
         String color = params.get(1);
-        ChessGame.TeamColor playerColor;
-        if (Objects.equals(color, "black")) {
-            playerColor = ChessGame.TeamColor.BLACK;
-        } else if (Objects.equals(color, "white")) {
-            playerColor = ChessGame.TeamColor.WHITE;
-        } else {
-            throw new UIException("Error: Bad Color");
-        }
 
+        var playerColor = StringUtils.getColorFromInput(color);
         var joinReq = new TestJoinRequest(playerColor, gameID);
 
         var res = SERVER.joinPlayer(joinReq, LocalStorage.getToken());
@@ -120,7 +113,7 @@ public class PostLogin {
     }
 
     private static void observeGame(ArrayList<String> params) throws Exception {
-        if (params.size() != 1) {
+        if (params.size() != 2) {
             throw new UIException("Error: Invalid amount of parameters");
         }
         var gameID = LocalStorage.getGame(params.getFirst());
@@ -129,10 +122,13 @@ public class PostLogin {
             throw new UIException("Error: Invalid game number");
         }
 
+        var playerColor = StringUtils.getColorFromInput(params.getLast());
+        LocalStorage.setTeamColor(playerColor);
+        LocalStorage.setCurrGameID(gameID);
         System.out.println("Observing game " + params.getFirst());
-        LocalStorage.setTeamColor(ChessGame.TeamColor.WHITE);
         ChessClient.state = ChessClient.ProgramState.GAMEPLAY;
-        ChessClient.clientType = ChessClient.ClientType.PLAYER;
+        ChessClient.clientType = ChessClient.ClientType.OBSERVER;
+
         ServerFacade.connectSocket();
     }
 

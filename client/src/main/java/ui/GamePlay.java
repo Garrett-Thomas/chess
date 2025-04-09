@@ -29,7 +29,7 @@ public class GamePlay {
     public static void eval(String cmd, ArrayList<String> params) throws UIException {
         if (ChessClient.clientType == ChessClient.ClientType.OBSERVER) {
             switch (cmd) {
-                case "legmove" -> legalMoves(params);
+                case "legmove" -> legalMoves(params, LocalStorage.getTeamColor());
                 case "redraw" -> drawBoard();
                 case "leave" -> leaveGame();
                 default -> printHelp();
@@ -37,7 +37,7 @@ public class GamePlay {
         } else {
             switch (cmd) {
                 case "move" -> executeMove(params);
-                case "legmove" -> legalMoves(params);
+                case "legmove" -> legalMoves(params, LocalStorage.getTeamColor());
                 case "redraw" -> drawBoard();
                 case "leave" -> leaveGame();
                 case "resign" -> resignGame();
@@ -56,14 +56,14 @@ public class GamePlay {
         }
     }
 
-    public static void legalMoves(ArrayList<String> params) throws UIException {
+    public static void legalMoves(ArrayList<String> params, ChessGame.TeamColor color) throws UIException {
         if (params.size() != 1) {
             throw new UIException("Bad position");
         }
 
         var pos = params.get(0).toLowerCase();
 
-        var posParsed = parseStringToPosition(pos, LocalStorage.getTeamColor());
+        var posParsed = parseStringToPosition(pos, color);
 
         var allMoves = game.validMoves(posParsed);
 
@@ -72,10 +72,10 @@ public class GamePlay {
         for (int i = 8; i > 0; i--) {
             for (int j = 1; j < 9; j++) {
 
-                var currPos = new ChessPosition(i, j);
-                if (LocalStorage.getTeamColor() == ChessGame.TeamColor.BLACK) {
-                    currPos = new ChessPosition(8 - i, 9 - j);
-                }
+                var currPos = new ChessPosition(8 - i, j);
+
+                // The issue is that I need to iterate through the board in the same way that the
+                // positions are presented
                 for (var move : allMoves) {
                     if (currPos.equals(move.getEndPosition())) {
                         var piece = game.getBoard().getPiece(currPos);
@@ -112,12 +112,6 @@ public class GamePlay {
         // if black then d3 is really board[5][3]
         int col = (int) pos.toCharArray()[0] - asciiA + 1;
         int row = Integer.valueOf(pos.toCharArray()[1] + "");
-
-        // Must invert coordinates
-        if (playerColor == ChessGame.TeamColor.BLACK) {
-            col = 9 - col;
-        }
-
         return new ChessPosition(row, col);
 
     }

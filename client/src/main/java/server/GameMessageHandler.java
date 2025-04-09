@@ -3,6 +3,7 @@ package server;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
+import ui.EscapeSequences;
 import ui.GamePlay;
 import ui.StringUtils;
 import utils.GsonParent;
@@ -33,12 +34,14 @@ public class GameMessageHandler {
 
                 var note = gson.fromJson(msg, NotificationMessage.class);
                 var styledNote = StringUtils.getPositiveString(note.message);
+                System.out.print(EscapeSequences.moveCursorToLocation(0, 0));
                 System.out.println(styledNote);
             }
 
             case ERROR -> {
                 var error = gson.fromJson(msg, ErrorMessage.class);
                 var styledError = StringUtils.getNegativeString(error.errorMessage);
+                System.out.print(EscapeSequences.moveCursorToLocation(0, 0));
                 System.out.println(styledError);
             }
 

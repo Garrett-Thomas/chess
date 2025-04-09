@@ -1,8 +1,11 @@
 package ui;
 
+import chess.ChessGame;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class StringUtils {
 
@@ -24,6 +27,18 @@ public class StringUtils {
         return new ArrayList<String>(input.subList(1, input.size()));
     }
 
+    public static ChessGame.TeamColor getColorFromInput(String input) throws UIException{
+        ChessGame.TeamColor playerColor;
+        input = input.toLowerCase();
+        if (Objects.equals(input, "black")) {
+            playerColor = ChessGame.TeamColor.BLACK;
+        } else if (Objects.equals(input, "white")) {
+            playerColor = ChessGame.TeamColor.WHITE;
+        } else {
+            throw new UIException("Error: Bad Color");
+        }
+        return playerColor;
+    }
     public static String getHighlightedBlock(String block){
         return EscapeSequences.SET_BG_COLOR_GREEN + block + EscapeSequences.RESET_BG_COLOR;
     }

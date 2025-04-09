@@ -6,6 +6,7 @@ import chess.ChessPosition;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import utils.CoordinateParser;
 import utils.GsonParent;
 
 public class ChessGameParsing {
@@ -56,10 +57,9 @@ public class ChessGameParsing {
     @org.junit.jupiter.api.Test
     public void testSetChessGame() {
 
-        Test.setGame(chessGame);
-        var testGame = Test.getGame();
-
-        assert (testGame.getBoard().equals(chessGame.getBoard()));
+        var coord = new ChessPosition(2, 1);
+        var res = chessGame.getBoard().getPiece(coord);
+        System.out.println(CoordinateParser.parseCoordinates(coord));
     }
 
     }

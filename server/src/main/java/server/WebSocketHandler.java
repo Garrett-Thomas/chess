@@ -12,6 +12,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
+import utils.CoordinateParser;
 import utils.GsonParent;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
@@ -129,8 +130,12 @@ public class WebSocketHandler {
 
                     String loadGame = new Gson().toJson(new LoadGameMessage(LOAD_GAME, gson.toJson(updatedGame)));
                     connections.broadcast(null, gameID, loadGame);
+                    var move = moveCommand.getMove();
+                    String parsedMove = CoordinateParser.parseCoordinates(move.getStartPosition());
+                    parsedMove += " -> ";
+                    parsedMove += CoordinateParser.parseCoordinates(move.getEndPosition());
 
-                    String notify = String.format("Player %s made this move: %s!", username, moveCommand.getMove().toString());
+                    String notify = String.format("Player %s made this move: %s!", username, parsedMove);
                     connections.broadcast(Collections.singleton(username), gameID, gson.toJson(new NotificationMessage(notify)));
 
 
