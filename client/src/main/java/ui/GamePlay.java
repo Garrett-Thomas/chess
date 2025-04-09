@@ -37,13 +37,20 @@ public class GamePlay {
         }
 
         var pos = params.get(0).toLowerCase();
+
         var posParsed = parseStringToPosition(pos, LocalStorage.getTeamColor());
+
         var allMoves = game.validMoves(posParsed);
+
         var gameBoard = makeBoard(true);
 
         for (int i = 8; i > 0; i--) {
             for (int j = 1; j < 9; j++) {
+
                 var currPos = new ChessPosition(i, j);
+                if (LocalStorage.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                    currPos = new ChessPosition(8 - i, 9 - j);
+                }
                 for (var move : allMoves) {
                     if (currPos.equals(move.getEndPosition())) {
                         var piece = game.getBoard().getPiece(currPos);
