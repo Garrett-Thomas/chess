@@ -3,7 +3,6 @@ package server;
 import chess.ChessGame;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
-import dao.GameDAO;
 import dao.SQLAuthDAO;
 import dao.SQLGameDAO;
 import dao.SQLUserDAO;
@@ -23,11 +22,8 @@ import websocket.messages.NotificationMessage;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
-import java.util.Timer;
 
 import static websocket.messages.ServerMessage.ServerMessageType.LOAD_GAME;
-import static websocket.messages.ServerMessage.ServerMessageType.NOTIFICATION;
 
 @WebSocket
 public class WebSocketHandler {
@@ -99,16 +95,12 @@ public class WebSocketHandler {
                     }
 
                     if (game.blackUsername() == null || game.whiteUsername() == null) {
-                        throw new RuntimeException("Game has not started yet");
+                        throw new InvalidMoveException("Game has not started yet");
                     }
                     if (game.blackUsername().equals(username)) {
                         teamColor = ChessGame.TeamColor.BLACK;
                     } else if (game.whiteUsername().equals(username)) {
                         teamColor = ChessGame.TeamColor.WHITE;
-                    }
-
-                    if (chessGame == null) {
-                        throw new IOException("Can't find game");
                     }
 
 

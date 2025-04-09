@@ -2,6 +2,7 @@ package server;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import model.GameData;
 import ui.GamePlay;
 import ui.StringUtils;
 import utils.GsonParent;
@@ -20,7 +21,11 @@ public class GameMessageHandler {
         switch (command.getServerMessageType()) {
             case LOAD_GAME -> {
                 var gameCommand = gson.fromJson(msg, LoadGameMessage.class);
-                GamePlay.setGame(gson.fromJson(gameCommand.getGame(), ChessGame.class));
+
+
+                // Lol this is a gameData string
+                var gameData = gson.fromJson(gameCommand.getGame(), GameData.class);
+                GamePlay.setGame(gameData.game());
                 GamePlay.drawBoard();
             }
 

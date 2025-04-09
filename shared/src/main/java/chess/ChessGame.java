@@ -144,14 +144,14 @@ public class ChessGame {
 
 
         if (currPiece == null || currPiece.getTeamColor() != this.teamTurn) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Cannot make move");
         }
 
         if (!validMoves(move.getStartPosition()).contains(move)) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Cannot make move");
         }
         if (!this.board.movePiece(move)) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Cannot make move");
         }
 
         setTeamTurn(this.teamTurn == TeamColor.BLACK ? TeamColor.WHITE : TeamColor.BLACK);

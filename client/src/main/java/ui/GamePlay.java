@@ -4,12 +4,13 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import server.ServerFacade;
 
 import java.util.ArrayList;
 
 public class GamePlay {
 
-    private static ChessGame game;
+    private static ChessGame game = null;
     private static ArrayList<String> header = genHeader();
     private static final int asciiA = 97;
 
@@ -59,7 +60,7 @@ public class GamePlay {
 
         // TODO: third parameter can be the promotion piece
         var parsedMove = parseStringsToChessMove(from, to, null, LocalStorage.getTeamColor());
-
+        ServerFacade.makeMove(parsedMove);
     }
 
 
