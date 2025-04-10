@@ -9,6 +9,7 @@ import dao.SQLUserDAO;
 import dataaccess.*;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
@@ -76,11 +77,21 @@ public class WebSocketHandler {
 
         String note = null;
         if (chessGame.isInCheck(ChessGame.TeamColor.BLACK) || chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
-            note = "Game in check";
+            String prefix = "White";
+            if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)) {
+                prefix = "Black";
+            }
+
+            note = prefix + " in check";
+            chessGame.setGameOver(true);
         }
 
         if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) || chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-            note = "Game in checkmate";
+            String prefix = "White";
+            if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                prefix = "Black";
+            }
+            note = prefix + " in checkmate";
             chessGame.setGameOver(true);
         }
         if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE) || chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
@@ -130,6 +141,20 @@ public class WebSocketHandler {
 
     }
 
+    private void leaveUser(String username, Integer gameID, GameData game) throws Exception {
+        if (Objects.equals(game.blackUsername(), username) || Objects.equals(game.whiteUsername(), username)) {
+            var updatedGame = removePlayer(game, username, false);
+            gameDAO.updateGame(updatedGame, gameID);
+        }
+        String note = String.format("Player %s has left", username);
+        var notification = GSON.toJson(new NotificationMessage(note));
+        CONNECTIONS.broadcast(Collections.singleton(username), gameID, notification);
+        CONNECTIONS.disconnect(gameID, username);
+        CONNECTIONS.removeConnection(gameID, username);
+
+
+    }
+
     @OnWebSocketMessage
     public void onMessage(Session user, String message) throws IOException {
 
@@ -155,16 +180,7 @@ public class WebSocketHandler {
                 }
 
                 case LEAVE -> {
-                    if (Objects.equals(game.blackUsername(), username) || Objects.equals(game.whiteUsername(), username)) {
-                        var updatedGame = removePlayer(game, username, false);
-                        gameDAO.updateGame(updatedGame, gameID);
-                    }
-                    String note = String.format("Player %s has left", username);
-                    var notification = GSON.toJson(new NotificationMessage(note));
-                    CONNECTIONS.broadcast(Collections.singleton(username), gameID, notification);
-                    CONNECTIONS.disconnect(gameID, username);
-                    CONNECTIONS.removeConnection(gameID, username);
-
+                    leaveUser(username, gameID, game);
                 }
 
                 case RESIGN -> {

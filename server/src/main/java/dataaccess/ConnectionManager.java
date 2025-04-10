@@ -47,6 +47,22 @@ public class ConnectionManager {
 
     }
 
+    public ArrayList<String> findUserByConnection(Session user) {
+
+        ArrayList<String> res = new ArrayList<>();
+        for (var gameID : connMap.keySet()) {
+            for (var conn : connMap.get(gameID)) {
+                if (conn.session().equals(user)) {
+                    res.add(conn.name());
+                    res.add(gameID.toString());
+                    return res;
+                }
+            }
+        }
+
+        return null;
+    }
+
 
     public void addConnection(Integer gameID, SockConnection sockConnection) {
         var connList = connMap.get(gameID);

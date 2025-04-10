@@ -20,10 +20,16 @@ public class GamePlayTest {
     public static void setup() {
         try {
             chessGame = new ChessGame();
-            ChessMove whiteMove = new ChessMove(new ChessPosition(2, 7), new ChessPosition(4, 7), null);
-            ChessMove blackMove = new ChessMove(new ChessPosition(7, 8), new ChessPosition(5, 8), null);
-            chessGame.makeMove(whiteMove);
-            chessGame.makeMove(blackMove);
+            var move1 = new ChessMove(new ChessPosition(2, 7), new ChessPosition(4, 7), null);
+            var move2 = new ChessMove(new ChessPosition(7, 4), new ChessPosition(5, 4), null);
+
+            var move3 = new ChessMove(new ChessPosition(4, 7), new ChessPosition(5, 7), null);
+            var move4 = new ChessMove(new ChessPosition(5, 4), new ChessPosition(4, 4), null);
+
+            chessGame.makeMove(move1);
+            chessGame.makeMove(move2);
+            chessGame.makeMove(move3);
+            chessGame.makeMove(move4);
             GamePlay.setGame(chessGame);
         } catch (Exception e) {
             System.err.println("Couldn't initialize tests");
@@ -35,12 +41,7 @@ public class GamePlayTest {
     public void highlightMoves() throws UIException {
 
         ArrayList<String> params = new ArrayList<>();
-        params.add("h5");
-
-        System.out.println("Hello");
-        System.out.print(EscapeSequences.ERASE_SCREEN);
-        System.out.println("Hello");
-        System.out.print(EscapeSequences.moveCursorToLocation(30, 10));
+        params.add("g5");
         GamePlay.legalMoves(params, ChessGame.TeamColor.BLACK);
 
     }

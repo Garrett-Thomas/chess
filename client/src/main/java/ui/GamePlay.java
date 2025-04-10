@@ -11,6 +11,7 @@ import websocket.commands.UserGameCommand;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class GamePlay {
 
@@ -82,7 +83,7 @@ public class GamePlay {
         for (int i = 8; i > 0; i--) {
             for (int j = 1; j < 9; j++) {
 
-                var currPos = new ChessPosition(8 - i, j);
+                var currPos = new ChessPosition(9 - i, j);
 
                 // The issue is that I need to iterate through the board in the same way that the
                 // positions are presented
@@ -91,7 +92,7 @@ public class GamePlay {
                         var piece = game.getBoard().getPiece(currPos);
                         String block = getString(i, j, piece, false);
                         block = StringUtils.getHighlightedBlock(block);
-                        gameBoard.get(i).set(j, block);
+                        gameBoard.get(i - 1).set(j, block);
                     }
 
                 }
@@ -110,20 +111,49 @@ public class GamePlay {
     }
 
     private static void resignGame() {
-        ServerFacade.leaveGame(UserGameCommand.CommandType.RESIGN);
+        var msg = "Are you sure you want to quit? Y or N";
+        var resignMsg = StringUtils.getPositiveString(msg);
+        System.out.println(resignMsg);
+        ChessClient.printInputDialog();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            try {
+                var input = scanner.nextLine();
+                var parsedInput = StringUtils.parseCommand(input);
+                var cmd = StringUtils.getCommand(parsedInput);
+                cmd = cmd.toLowerCase();
+                if (cmd.equals("y")) {
+                    ServerFacade.leaveGame(UserGameCommand.CommandType.RESIGN);
+                } else {
+                    return;
+                }
+
+            } catch (Exception e) {
+                return;
+            }
+
+        }
+
+
     }
 
 
     public static ChessPosition parseStringToPosition(String pos, ChessGame.TeamColor playerColor) throws UIException {
 
-        int col = (int) pos.toCharArray()[0] - ASCII_A + 1;
-        int row = Integer.valueOf(pos.toCharArray()[1] + "");
+        try {
+            int col = (int) pos.toCharArray()[0] - ASCII_A + 1;
+            int row = Integer.valueOf(pos.toCharArray()[1] + "");
 
-        if(col < 0 || col > 8 || row < 0 || row > 8){
-            throw new UIException("Invalid Arguments");
+            if (col < 0 || col > 8 || row < 0 || row > 8) {
+                throw new UIException("Error: Invalid Arguments");
+            }
+            return new ChessPosition(row, col);
+
+        } catch (Exception e) {
+            throw new UIException("Error: Invalid Arguments");
+
         }
-        return new ChessPosition(row, col);
-
     }
 
     private static ChessMove parseStringsToChessMove(String f, String t, ChessPiece.PieceType promPiece, ChessGame.TeamColor pC) throws UIException {
@@ -165,7 +195,6 @@ public class GamePlay {
 
             header.add(EscapeSequences.SET_BG_COLOR_WHITE + " " + (char) a++ + " " + EscapeSequences.RESET_BG_COLOR);
         }
-
 
         header.add(EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.EMPTY + EscapeSequences.RESET_BG_COLOR);
         return header;
@@ -244,7 +273,11 @@ public class GamePlay {
     }
 
     public static void drawBoard() {
-
+        if (game == null) {
+            ChessClient.state = ChessClient.ProgramState.POST_LOGIN;
+            ChessClient.clientType = ChessClient.ClientType.NONE;
+            return;
+        }
         var gameBoard = makeBoard(true);
         gameBoard.addFirst(header);
         gameBoard.add(header);
