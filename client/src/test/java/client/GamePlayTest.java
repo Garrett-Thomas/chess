@@ -46,7 +46,7 @@ public class GamePlayTest {
     }
 
     @Test
-    public void testParsePosition() {
+    public void testParsePosition() throws UIException {
         var tempBoard = new ChessGame();
         String pos1 = "c2";
         var res = GamePlay.parseStringToPosition(pos1, ChessGame.TeamColor.WHITE);
