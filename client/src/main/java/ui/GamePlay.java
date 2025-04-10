@@ -126,11 +126,11 @@ public class GamePlay {
 
     }
 
-    private static ChessMove parseStringsToChessMove(String from, String to, ChessPiece.PieceType promotionPiece, ChessGame.TeamColor playerColor) throws UIException {
-        var fromPos = parseStringToPosition(from, playerColor);
-        var toPos = parseStringToPosition(to, playerColor);
+    private static ChessMove parseStringsToChessMove(String f, String t, ChessPiece.PieceType promPiece, ChessGame.TeamColor pC) throws UIException {
+        var fromPos = parseStringToPosition(f, pC);
+        var toPos = parseStringToPosition(t, pC);
 
-        return new ChessMove(fromPos, toPos, promotionPiece);
+        return new ChessMove(fromPos, toPos, promPiece);
     }
 
     private static void executeMove(ArrayList<String> move) throws UIException {
