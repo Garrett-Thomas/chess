@@ -28,7 +28,9 @@ public class ChessClient {
         clientType = ClientType.NONE;
     }
 
-
+    public static void printInputDialog(){
+        System.out.print(">> " + EscapeSequences.moveCursorToLocation(3, 0));
+    }
     public void run() {
         Scanner scanner = new Scanner(System.in);
 
@@ -37,10 +39,7 @@ public class ChessClient {
 
         while (true) {
             try {
-                if (state == ProgramState.PRE_LOGIN || state == ProgramState.POST_LOGIN) {
-                    System.out.print(">> " + EscapeSequences.moveCursorToLocation(3, 0));
-                }
-
+                printInputDialog();
                 var input = scanner.nextLine();
 
                 var parsedInput = StringUtils.parseCommand(input);

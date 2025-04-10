@@ -15,7 +15,6 @@ public class ChessMove {
     private ChessPiece.PieceType promotionPiece;
 
 
-
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
@@ -38,10 +37,6 @@ public class ChessMove {
         return this.endPosition;
     }
 
-    @Override
-    public String toString() {
-        return String.format("(%d, %d) -> (%d, %d)", startPosition.getRow(), startPosition.getColumn(), endPosition.getRow(), endPosition.getColumn());
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -49,7 +44,10 @@ public class ChessMove {
             return false;
         }
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+        var firstEquality = Objects.equals(startPosition, chessMove.startPosition);
+        var secondEquality = Objects.equals(endPosition, chessMove.endPosition);
+        var thirdEquality = promotionPiece == chessMove.promotionPiece;
+        return firstEquality && secondEquality && thirdEquality;
     }
 
     @Override

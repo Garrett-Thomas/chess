@@ -9,12 +9,22 @@ import server.ServerFacade;
 import websocket.commands.UserGameCommand;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GamePlay {
 
     private static ChessGame game = null;
     private static ArrayList<String> header = genHeader();
     private static final int ASCII_A = 97;
+    private static final Map<String, ChessPiece.PieceType> PROM_PIECE_MAP = Map.of(
+            "pawn", ChessPiece.PieceType.PAWN,
+            "knight", ChessPiece.PieceType.KNIGHT,
+            "bishop", ChessPiece.PieceType.BISHOP,
+            "rook", ChessPiece.PieceType.ROOK,
+            "queen", ChessPiece.PieceType.QUEEN
+    );
+
     private static final String OBSERVER_HELP = """
             help -> this message
             legmove -> [pos] get the legal moves for a piece at position pos
@@ -22,7 +32,7 @@ public class GamePlay {
             redraw -> redraw board
             """;
     private static final String PLAYER_HELP_MESSAGE = """
-            move -> [from] [to] e.g. a1 a2 
+            move -> [from] [to] [promotion piece (optional)] e.g. a1 a2 (knight)
             resign -> resign game
             """;
 
@@ -58,7 +68,7 @@ public class GamePlay {
 
     public static void legalMoves(ArrayList<String> params, ChessGame.TeamColor color) throws UIException {
         if (params.size() != 1) {
-            throw new UIException("Bad position");
+            throw new UIException("Error: Bad position");
         }
 
         var pos = params.get(0).toLowerCase();
@@ -104,35 +114,40 @@ public class GamePlay {
     }
 
 
-    public static ChessPosition parseStringToPosition(String pos, ChessGame.TeamColor playerColor) {
+    public static ChessPosition parseStringToPosition(String pos, ChessGame.TeamColor playerColor) throws UIException {
 
-        // If white then a1 is really board[0][7]
-        // if black then a1 is really board[7][0]
-        // if white then d3 is really board[3][3]
-        // if black then d3 is really board[5][3]
         int col = (int) pos.toCharArray()[0] - ASCII_A + 1;
         int row = Integer.valueOf(pos.toCharArray()[1] + "");
+
+        if(col < 0 || col > 8 || row < 0 || row > 8){
+            throw new UIException("Invalid Arguments");
+        }
         return new ChessPosition(row, col);
 
     }
 
-    private static ChessMove parseStringsToChessMove(String from, String to, ChessPiece.PieceType promotionPiece, ChessGame.TeamColor playerColor) {
+    private static ChessMove parseStringsToChessMove(String from, String to, ChessPiece.PieceType promotionPiece, ChessGame.TeamColor playerColor) throws UIException {
         var fromPos = parseStringToPosition(from, playerColor);
         var toPos = parseStringToPosition(to, playerColor);
 
         return new ChessMove(fromPos, toPos, promotionPiece);
     }
 
-    private static void executeMove(ArrayList<String> move) {
+    private static void executeMove(ArrayList<String> move) throws UIException {
         if (move.size() < 2 || move.size() > 3) {
             throw new RuntimeException("Invalid Chess Move");
         }
 
         String from = move.get(0).toLowerCase();
         String to = move.get(1).toLowerCase();
+        String prom = null;
+        ChessPiece.PieceType promotionPiece = null;
+        if (move.size() == 3) {
+            prom = move.getLast().toLowerCase();
+            promotionPiece = PROM_PIECE_MAP.get(prom);
+        }
 
-        // TODO: third parameter can be the promotion piece
-        var parsedMove = parseStringsToChessMove(from, to, null, LocalStorage.getTeamColor());
+        var parsedMove = parseStringsToChessMove(from, to, promotionPiece, LocalStorage.getTeamColor());
         ServerFacade.makeMove(parsedMove);
     }
 
@@ -207,7 +222,7 @@ public class GamePlay {
     }
 
     public static void printBoard(ArrayList<ArrayList<String>> gameBoard, ChessGame.TeamColor color) {
-
+        System.out.println();
         if (color == ChessGame.TeamColor.WHITE) {
             for (ArrayList<String> row : gameBoard) {
                 System.out.println(String.join("", row));
@@ -225,7 +240,7 @@ public class GamePlay {
             }
         }
 
-
+        System.out.println();
     }
 
     public static void drawBoard() {

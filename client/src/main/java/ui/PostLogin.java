@@ -40,15 +40,16 @@ public class PostLogin {
     }
 
     private static void createGame(ArrayList<String> params) throws Exception {
-        var res = SERVER.createGame(new TestCreateRequest(params.getFirst()), LocalStorage.getToken());
         if (params.size() != 1) {
             throw new UIException("Error: Invalid amount of parameters");
         }
 
+        var res = SERVER.createGame(new TestCreateRequest(params.getFirst()), LocalStorage.getToken());
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
         }
 
+        updateGamMap();
         var msg = EscapeSequences.SET_TEXT_COLOR_GREEN + "Created game w/ name: " + params.getFirst() + EscapeSequences.RESET_TEXT_COLOR;
         System.out.println(msg);
     }
@@ -57,7 +58,7 @@ public class PostLogin {
         return String.format("%-8s %-20s %-20s %-20s", num, name, whiteName, blackName);
     }
 
-    private static void listGames() throws Exception {
+    private static String updateGamMap() throws UIException {
         var res = SERVER.listGames(LocalStorage.getToken());
         if (res.getMessage() != null) {
             throw new UIException(res.getMessage());
@@ -83,7 +84,11 @@ public class PostLogin {
         }
 
         LocalStorage.setGameMap(numToID);
-        System.out.println(stringBuilder);
+        return stringBuilder.toString();
+    }
+
+    private static void listGames() throws Exception {
+        System.out.println(updateGamMap());
     }
 
     private static void playGame(ArrayList<String> params) throws Exception {
